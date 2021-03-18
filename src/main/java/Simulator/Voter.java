@@ -1,0 +1,239 @@
+package Simulator;
+
+import org.graphstream.graph.Element;
+import org.graphstream.graph.Node;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+public class Voter {
+
+    private int opinion;
+    private Boolean opinionBoolean;
+    private int mediaExposure;
+    private int networkOpinionDistribution;
+    private int networkHomogeneity;
+    private double politicalInterest;
+    private int width, height;
+    private ArrayList<Voter> discussants;
+    private float socialExposure;
+    private int networkDisagreement;
+    private Field f;
+    private Random rand = new Random();
+    private Node node;
+
+    public Voter(int w, int h, Field f) {
+        width = w;
+        height = h;
+        Random rand = new Random();
+        politicalInterest = rand.nextGaussian();
+        if (politicalInterest > 1) {
+            if (rand.nextInt(2) == 0) {
+                opinion = (int) ((Math.random() * 2) + 2);
+            } else {
+                opinion = (int) ((Math.random() * -2) - 2);
+            }
+        }
+        else if (politicalInterest <1 && politicalInterest >-1){
+            if (rand.nextInt(2) == 0) {
+                opinion = (int) ((Math.random() * 2) + 1);
+            } else {
+                opinion = (int) ((Math.random() * -2) - 1);
+            }
+        }
+        else {
+            if (rand.nextInt(2) == 0) {
+                opinion = (int) ((Math.random() * 2));
+            } else {
+                opinion = (int) ((Math.random() * -2));
+            }
+        }
+        if(rand.nextInt(2) == 1){
+            opinionBoolean = true;
+        }
+        else {
+            opinionBoolean = false;
+        }
+        this.f = f;
+    }
+
+    public Voter(Node n){
+        Random rand = new Random();
+        politicalInterest = rand.nextGaussian();
+        if (politicalInterest > 1) {
+            if (rand.nextInt(2) == 0) {
+                opinion = (int) ((Math.random() * 2) + 2);
+            } else {
+                opinion = (int) ((Math.random() * -2) - 2);
+            }
+        }
+        else if (politicalInterest <1 && politicalInterest >-1){
+            if (rand.nextInt(2) == 0) {
+                opinion = (int) ((Math.random() * 2) + 1);
+            } else {
+                opinion = (int) ((Math.random() * -2) - 1);
+            }
+        }
+        else {
+            if (rand.nextInt(2) == 0) {
+                opinion = (int) ((Math.random() * 2));
+            } else {
+                opinion = (int) ((Math.random() * -2));
+            }
+        }
+        if(rand.nextInt(2) == 1){
+            opinionBoolean = true;
+        }
+        else {
+            opinionBoolean = false;
+        }
+    }
+
+    public int getAgentOpinion() {
+        return opinion;
+    }
+
+    public double getAgentPoliticalInterest() {
+        return politicalInterest;
+    }
+
+    public boolean getAgentOpinionBoolean(){
+        return opinionBoolean;
+    }
+
+    public void consumeMedia() {
+        if (rand.nextInt(2) < Math.abs(opinion)){
+            mediaExposure = mediaExposure + Integer.signum(opinion);
+        }
+        if (rand.nextInt(3) < Math.abs(opinion)){
+            mediaExposure = mediaExposure + Integer.signum(opinion);
+        }
+        if (rand.nextInt(4) < Math.abs(opinion)){
+            mediaExposure = mediaExposure + Integer.signum(opinion);
+        }
+        if (opinion == 0){
+            mediaExposure = rand.nextInt(7) - 3;
+        }
+    }
+
+/*    public void act(){
+
+
+        switch (ModelConstants.MODEL) {
+            case 1:
+                actModel1();
+                break;
+            case 2:
+                actModel2();
+                break;
+
+        }
+    }
+
+    public void actModel1(){ //binary opinions
+        ArrayList<Voter> adj = f.adjacentVoters(width, height);
+        int count = 0;
+
+        for(Voter v: adj){
+            count += (v.getAgentOpinionBoolean() ? 1 : 0);
+        }
+        if(count > adj.size()/2){
+            opinionBoolean = true;
+        }
+        else if(count < adj.size()/2){
+            opinionBoolean = false;
+        }
+
+        //else leave the same
+        //System.out.println("boolean flipped" + this + opinionBoolean);
+    }
+
+    public void actModel2(){
+        //create a running tally of 3 factors
+        //1: previous attitude * decay factor
+        //2: opinions of those in political discussion group
+        //3: pro vs counter media exposure * proportion of discussants who have the same bias, (positive vs negative)
+
+        //1
+
+        float decayedOpinion = opinion * ModelConstants.OPINIONDECAY;
+
+        //2
+
+        ArrayList<Voter> adj = f.adjacentVoters(width, height);//TODO: change this. for now I will use all adjacent voters
+
+        float count = 0;
+        for(Voter v: adj){
+            count += v.getAgentOpinion();
+        }
+
+        float opinionDistribution = count / adj.size();
+
+        //3
+        float pro = 0, counter = 0;
+        for(Voter v: adj){
+            if (v.getAgentOpinion() * this.getAgentOpinion() >= 0){
+                pro++;
+            }
+            else{
+                counter++;
+            }
+        }
+        float ratio = pro/adj.size();
+
+        float tally3 = (float) ((Math.signum(opinion)) * 0.6 * ratio);
+
+        //calculate based off 1, 2, & 3
+        if (Math.round(decayedOpinion + opinionDistribution + tally3) > opinion){
+            opinion ++;
+            if (opinion > 3){
+                opinion = 3;
+            }
+        }
+        else if (Math.round(decayedOpinion + opinionDistribution + tally3) < opinion){
+            opinion --;
+            if (opinion < -3){
+                opinion = -3;
+            }
+        }
+
+
+    }*/
+
+    public void updateOpinion(){
+
+        float tally;
+        float oldOpinion = opinion * ((1 - ModelConstants.OPINION_DECAY) + rand.nextFloat() * ModelConstants.OPINION_DECAY); //old Opinion is old opinion multiplied by random value between 1-opinion decay and 1
+
+        tally = oldOpinion + ModelConstants.SOCIAL_INFLUENCE * socialExposure + ModelConstants.MEDIA_INFLUENCE * mediaExposure;
+
+        if (tally != opinion){
+            opinion += (int)(Math.signum(tally));
+        }
+
+        while(Math.abs(opinion) > 3){
+            opinion = opinion - Integer.signum(opinion);
+        }
+    }
+
+    public void selectDiscussants(){
+        if (ModelConstants.DISCUSSANTS_MODEL == 0){
+            discussants = f.adjacentVoters(this);
+        }
+    }
+
+    public void discuss(){
+        int sum = 0;
+        for (Voter voter : discussants){
+            sum += voter.opinion;
+            if(voter.opinion * this.opinion < 0 || (this.opinion == 0 && voter.opinion != 0)){networkDisagreement++;}
+        }
+        socialExposure = (float)sum / discussants.size(); //mean average model
+
+        //TODO majority model & Deffuant-Weisbuch bounded confidence model
+    }
+
+    public int getWidth(){return width;}
+
+    public int getHeight(){return height;}
+}
