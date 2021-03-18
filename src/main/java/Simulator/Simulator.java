@@ -1,19 +1,16 @@
 package Simulator;
-import UI.View;
 import org.graphstream.graph.Graph;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Simulator {
 
-
-    private Field field;
     private _Graph graph;
-    private View view;
     private int step;
-    //private ArrayList<Voter> voter;
 
-    public Simulator() {
+
+    public Simulator() throws IOException {
 
         //field = new Field(ModelConstants.WIDTH, ModelConstants.HEIGHT, ModelConstants.MODEL);
         //System.out.println("Model constructed with height "+ ModelConstants.HEIGHT+" and width "+ ModelConstants.WIDTH);
@@ -36,7 +33,7 @@ public class Simulator {
     public void simulateOneStep() {
         step++;
 
-        ArrayList<Voter> voters = field.getVoters();
+        ArrayList<Voter> voters = graph.getVoters();
 
         //watch media
         for (Voter voter: voters){
@@ -55,9 +52,9 @@ public class Simulator {
         //update opinions
         for (Voter voter: voters){
             voter.updateOpinion();
+            graph.colour(voter);
         }
 
-        view.showStatus(step, field);
 
     }
 }

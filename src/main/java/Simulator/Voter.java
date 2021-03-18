@@ -3,6 +3,7 @@ package Simulator;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Node;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -14,17 +15,14 @@ public class Voter {
     private int networkOpinionDistribution;
     private int networkHomogeneity;
     private double politicalInterest;
-    private int width, height;
     private ArrayList<Voter> discussants;
     private float socialExposure;
     private int networkDisagreement;
-    private Field f;
     private Random rand = new Random();
     private Node node;
 
-    public Voter(int w, int h, Field f) {
-        width = w;
-        height = h;
+    public Voter(Node n){
+        node = n;
         Random rand = new Random();
         politicalInterest = rand.nextGaussian();
         if (politicalInterest > 1) {
@@ -54,39 +52,10 @@ public class Voter {
         else {
             opinionBoolean = false;
         }
-        this.f = f;
     }
 
-    public Voter(Node n){
-        Random rand = new Random();
-        politicalInterest = rand.nextGaussian();
-        if (politicalInterest > 1) {
-            if (rand.nextInt(2) == 0) {
-                opinion = (int) ((Math.random() * 2) + 2);
-            } else {
-                opinion = (int) ((Math.random() * -2) - 2);
-            }
-        }
-        else if (politicalInterest <1 && politicalInterest >-1){
-            if (rand.nextInt(2) == 0) {
-                opinion = (int) ((Math.random() * 2) + 1);
-            } else {
-                opinion = (int) ((Math.random() * -2) - 1);
-            }
-        }
-        else {
-            if (rand.nextInt(2) == 0) {
-                opinion = (int) ((Math.random() * 2));
-            } else {
-                opinion = (int) ((Math.random() * -2));
-            }
-        }
-        if(rand.nextInt(2) == 1){
-            opinionBoolean = true;
-        }
-        else {
-            opinionBoolean = false;
-        }
+    public Node getNode(){
+        return node;
     }
 
     public int getAgentOpinion() {
@@ -203,7 +172,8 @@ public class Voter {
     public void updateOpinion(){
 
         float tally;
-        float oldOpinion = opinion * ((1 - ModelConstants.OPINION_DECAY) + rand.nextFloat() * ModelConstants.OPINION_DECAY); //old Opinion is old opinion multiplied by random value between 1-opinion decay and 1
+        //old Opinion is old opinion multiplied by random value between 1-opinion decay and 1
+        float oldOpinion = opinion * ((1 - ModelConstants.OPINION_DECAY) + rand.nextFloat() * ModelConstants.OPINION_DECAY);
 
         tally = oldOpinion + ModelConstants.SOCIAL_INFLUENCE * socialExposure + ModelConstants.MEDIA_INFLUENCE * mediaExposure;
 
@@ -216,9 +186,18 @@ public class Voter {
         }
     }
 
+    public ArrayList<Voter> getAdjacent(){
+        Node adj[] = node.neighborNodes().toArray(Node[]::new);
+        ArrayList<Voter> result = new ArrayList<>();
+        for(Node n: adj) {
+            result.add((Voter)n.getAttribute("Voter"));
+        }
+        return result;
+    }
+
     public void selectDiscussants(){
         if (ModelConstants.DISCUSSANTS_MODEL == 0){
-            discussants = f.adjacentVoters(this);
+            discussants = getAdjacent();
         }
     }
 
@@ -232,8 +211,4 @@ public class Voter {
 
         //TODO majority model & Deffuant-Weisbuch bounded confidence model
     }
-
-    public int getWidth(){return width;}
-
-    public int getHeight(){return height;}
 }

@@ -175,16 +175,20 @@ public class GUIMain {
     }
 
     private void initialise(){
-        //ModelConstants.WIDTH = (int)graphSize.getValue();
-        ModelConstants.SIZE = (int)graphSize.getValue();
-        //ModelConstants.HEIGHT = (int)fieldHeight.getValue();
-        ModelConstants.GRAPH = graph.getSelectedIndex() + 1;
-        ModelConstants.MODEL = model.getSelectedIndex() + 1;
-        ModelConstants.OPINION_DECAY = (float)opinionDecay.getValue();
-        ModelConstants.MEDIA_INFLUENCE = (float)mediaInfluence.getValue();
-        ModelConstants.SOCIAL_INFLUENCE = (float)socialInfluence.getValue();
-        this.s = new Simulator();
-
+        try {
+            //ModelConstants.WIDTH = (int)graphSize.getValue();
+            ModelConstants.SIZE = (int) graphSize.getValue();
+            //ModelConstants.HEIGHT = (int)fieldHeight.getValue();
+            ModelConstants.GRAPH = graph.getSelectedIndex() + 1;
+            ModelConstants.MODEL = model.getSelectedIndex() + 1;
+            ModelConstants.OPINION_DECAY = (float) opinionDecay.getValue();
+            ModelConstants.MEDIA_INFLUENCE = (float) mediaInfluence.getValue();
+            ModelConstants.SOCIAL_INFLUENCE = (float) socialInfluence.getValue();
+            this.s = new Simulator();
+        }
+        catch (Exception e){
+                JOptionPane.showMessageDialog(mainFrame, "Problem initialising graph. " + e.getMessage());
+            }
     }
 
 

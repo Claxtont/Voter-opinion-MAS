@@ -1,0 +1,17 @@
+
+
+node  {
+    text-background-mode: rounded-box;
+    text-alignment: at-right;
+}
+node.om3  {fill-color: rgb(255,0,0); }
+node.om2  {fill-color: rgb(170,0,0); }
+node.om1  {fill-color: rgb(85,0,0);}
+node.o0  {fill-color: rgb(0,0,0);}
+node.o1  {fill-color: rgb(0,0,85); }
+node.o2  {fill-color: rgb(0,0,170); }
+node.o3  {fill-color: rgb(0,0,255); }
+
+edge {
+    shape: blob;
+}
