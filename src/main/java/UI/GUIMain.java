@@ -3,8 +3,7 @@ package UI;
 import Simulator.Simulator;
 import Simulator.ModelConstants;
 import Simulator._Graph;
-import org.graphstream.graph.*;
-import org.graphstream.graph.implementations.*;
+import Simulator.GraphTest;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -35,10 +34,11 @@ public class GUIMain {
 
     public static void main(String[] args) {
         //final Model gm = new Model();
-        GUIMain gm = new GUIMain();
+        System.setProperty("org.graphstream.ui", "org.graphstream.ui.swing.util.Display");
+        GUIMain gm = new GUIMain(args);
     }
 
-    private GUIMain() {
+    private GUIMain(String[] args) {
         // create components
         initialiseButton = new JButton();
         oneStepButton = new JButton();
@@ -142,12 +142,12 @@ public class GUIMain {
 
                 Thread thread = new Thread(new Runnable(){
                     public void run(){
-                        initialise();
+                        initialise(args);
                         mainFrame.setVisible(true);
                     }
                 });
                 thread.start();
-                mainFrame.setVisible(false);
+                //mainFrame.setVisible(false);
             };
         });
 
@@ -187,7 +187,7 @@ public class GUIMain {
 
     }
 
-    private void initialise(){
+    private void initialise(String[] args){
         try {
             //ModelConstants.WIDTH = (int)graphSize.getValue();
             ModelConstants.SIZE = (int) graphSize.getValue();
@@ -197,7 +197,9 @@ public class GUIMain {
             ModelConstants.OPINION_DECAY = (float) opinionDecay.getValue();
             ModelConstants.MEDIA_INFLUENCE = (float) mediaInfluence.getValue();
             ModelConstants.SOCIAL_INFLUENCE = (float) socialInfluence.getValue();
-            this.s = new Simulator();
+            GraphTest test = new GraphTest();
+            test.run( args , mainFrame);
+            //this.s = new Simulator();
 
         }
         catch (Exception e){

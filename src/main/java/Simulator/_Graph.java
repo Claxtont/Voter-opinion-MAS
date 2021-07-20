@@ -1,11 +1,17 @@
 package Simulator;
 import org.graphstream.algorithm.generator.*;
-import org.graphstream.graph.*;
-import org.graphstream.graph.implementations.*;
-import org.graphstream.ui.graphicGraph.stylesheet.StyleSheet;
-import org.graphstream.ui.swing_viewer.ViewPanel;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.MultiGraph;
+import org.graphstream.ui.view.ViewerPipe;
+import org.graphstream.ui.view.ViewerListener;
 import org.graphstream.ui.view.Viewer;
-import org.graphstream.ui.view.View;
+
+//import org.graphstream.ui.graphicGraph.stylesheet.StyleSheet;
+//import org.graphstream.ui.swing_viewer.ViewPanel;
+//import org.graphstream.ui.swing.*;
+//import org.graphstream.ui.swing_viewer.*;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -15,13 +21,17 @@ import java.util.ArrayList;
 public class _Graph {
 
     private Graph graph;
+    private Viewer viewer;
     private int size;
 
     public _Graph() throws IOException {
 
-        System.setProperty("org.graphstream.ui", "swing");
+        System.setProperty("org.graphstream.ui", "org.graphstream.ui.swing.util.Display");
 
-        graph = new SingleGraph("_Graph");
+        graph = new MultiGraph("_Graph");
+        //viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+
+        //View view = viewer.addDefaultView(false);
 
         String styleSheet = Files.readString(java.nio.file.Path.of("stylesheet.css"));
 
