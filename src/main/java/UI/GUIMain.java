@@ -16,17 +16,20 @@ public class GUIMain {
     // Convenient to have base windows available everywhere within this class
     private JFrame mainFrame;
 
-    private LabelledTextArea simSeed;
+    //private LabelledTextArea simSeed;
     private LabelledTextArea graphSize;
     private LabelledTextArea opinionDecay;
     private LabelledTextArea mediaInfluence;
     private LabelledTextArea socialInfluence;
 
-    private JButton initialiseButton, oneStepButton, longStepButton, quitButton;
-    private JComboBox model, graph;
+    private JButton initialiseButton, oneStepButton, longStepButton, quitButton, fullScreenButton;
+    private JComboBox model, graph, socialInfluenceModel, discussantSelectionModel, opinionUpdateModel;
 
-    private String[] models = {"model 1, binary opinion", "model 2, 7 point opinion scale", "model 3, new graph test"};
-    private String[] graphs = {"graph 1, grid", "graph 2, Dorogovtsev Mendes graph"};
+    private String[] models = {"opinion model 1, binary opinion", "opinion model 2, 7 point opinion scale"};
+    private String[] graphs = {"graph 1, grid", "graph 2, torus", "graph 2, Dorogovtsev Mendes graph"};
+    private String[] socialInfluenceModels = {"Social Influence Model 1, Mean Average", "Social Influence Model 2, Majority", "Social Influence Model 3, Deffuant-Weisbauch BC model"};
+    private String[] discussantSelectionModels = {"Discussant Selection Model 1, all neighbours", "Discussant Selection Model 2, Homophily-based"};
+    private String[] opinionUpdateModels = {"Opinion Update Model 1, Weighted mean average"};
 
     private Simulator s;
 
@@ -42,15 +45,19 @@ public class GUIMain {
         longStepButton = new JButton();
         quitButton = new JButton();
 
-        graphSize = new LabelledTextArea("Width of simulation", String.valueOf(ModelConstants.WIDTH));
+
+        graphSize = new LabelledTextArea("Number of Agents", String.valueOf(100));
         //fieldHeight = new LabelledTextArea("Height of simulation", String.valueOf(ModelConstants.HEIGHT));
-        simSeed = new LabelledTextArea("Random Seed", "not implemented");
+        //simSeed = new LabelledTextArea("Random Seed", "not implemented");
         opinionDecay = new LabelledTextArea("Voter opinion decay", String.valueOf(ModelConstants.OPINION_DECAY));
         mediaInfluence = new LabelledTextArea("Media Influence on voters", String.valueOf(ModelConstants.MEDIA_INFLUENCE));
         socialInfluence = new LabelledTextArea("Social Influence on voters", String.valueOf(ModelConstants.SOCIAL_INFLUENCE));
 
         model = new JComboBox(models);
         graph = new JComboBox(graphs);
+        socialInfluenceModel = new JComboBox(socialInfluenceModels);
+        discussantSelectionModel = new JComboBox(discussantSelectionModels);
+        opinionUpdateModel = new JComboBox(opinionUpdateModels);
 
         //properties of components
         initialiseButton.setText("Initialise simulation");
@@ -79,8 +86,8 @@ public class GUIMain {
         //LayoutManagers
         mainFrame.getContentPane().setLayout(new BorderLayout());
 
-        parameterBox.setLayout(new GridLayout(2,2));
-        commandBox.setLayout(new GridLayout(3,1));
+        parameterBox.setLayout(new GridLayout(4,3));
+        commandBox.setLayout(new GridLayout(2,2));
         lowerBox.setLayout(new BorderLayout());
 
         //add components to containers
@@ -92,13 +99,17 @@ public class GUIMain {
 
 
         model.setSelectedIndex(1);
-        graph.setSelectedIndex(1);
+        graph.setSelectedIndex(0);
+
         parameterBox.add(model);
         parameterBox.add(graph);
+        parameterBox.add(socialInfluenceModel);
+        parameterBox.add(discussantSelectionModel);
+        parameterBox.add(opinionUpdateModel);
 
         parameterBox.add(graphSize);
         //parameterBox.add(fieldHeight);
-        parameterBox.add(simSeed);
+        //parameterBox.add(simSeed);
         parameterBox.add(opinionDecay);
         parameterBox.add(mediaInfluence);
         parameterBox.add(socialInfluence);
@@ -134,7 +145,6 @@ public class GUIMain {
                         initialise();
                         mainFrame.setVisible(true);
                     }
-
                 });
                 thread.start();
                 mainFrame.setVisible(false);
@@ -168,8 +178,11 @@ public class GUIMain {
             }
         });
 
+
         //display the GUI
         mainFrame.pack();
+        //mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //mainFrame.setUndecorated(true);
         mainFrame.setVisible(true);
 
     }
@@ -180,11 +193,12 @@ public class GUIMain {
             ModelConstants.SIZE = (int) graphSize.getValue();
             //ModelConstants.HEIGHT = (int)fieldHeight.getValue();
             ModelConstants.GRAPH = graph.getSelectedIndex() + 1;
-            ModelConstants.MODEL = model.getSelectedIndex() + 1;
+            ModelConstants.OPINION_MODEL = model.getSelectedIndex() + 1;
             ModelConstants.OPINION_DECAY = (float) opinionDecay.getValue();
             ModelConstants.MEDIA_INFLUENCE = (float) mediaInfluence.getValue();
             ModelConstants.SOCIAL_INFLUENCE = (float) socialInfluence.getValue();
             this.s = new Simulator();
+
         }
         catch (Exception e){
                 JOptionPane.showMessageDialog(mainFrame, "Problem initialising graph. " + e.getMessage());
@@ -229,7 +243,4 @@ public class GUIMain {
         //    JOptionPane.showMessageDialog(mainFrame, "Problem simulating the next step. " + e.getMessage());
         //}
     }
-
-
-
 }

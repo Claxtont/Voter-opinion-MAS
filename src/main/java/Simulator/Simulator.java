@@ -15,7 +15,7 @@ public class Simulator {
         //field = new Field(ModelConstants.WIDTH, ModelConstants.HEIGHT, ModelConstants.MODEL);
         //System.out.println("Model constructed with height "+ ModelConstants.HEIGHT+" and width "+ ModelConstants.WIDTH);
         //view = new View(ModelConstants.WIDTH, ModelConstants.HEIGHT, this);
-        graph = new _Graph(ModelConstants.SIZE, ModelConstants.GRAPH, ModelConstants.SIZE);
+        graph = new _Graph();
         reset();
 
     }
@@ -35,6 +35,14 @@ public class Simulator {
 
         ArrayList<Voter> voters = graph.getVoters();
 
+        act7PointScale(voters);
+    }
+
+    private void actBinaryModel(){
+
+    }
+
+    private void act7PointScale(ArrayList<Voter> voters){
         //watch media
         for (Voter voter: voters){
             voter.consumeMedia();
@@ -49,12 +57,11 @@ public class Simulator {
         for (Voter voter: voters){
             voter.discuss();
         }
+
         //update opinions
         for (Voter voter: voters){
             voter.updateOpinion();
             graph.colour(voter);
         }
-
-
     }
 }

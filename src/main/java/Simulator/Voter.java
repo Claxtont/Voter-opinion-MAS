@@ -5,6 +5,7 @@ import org.graphstream.graph.Node;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class Voter {
@@ -21,7 +22,7 @@ public class Voter {
     private Random rand = new Random();
     private Node node;
 
-    public Voter(Node n){
+    public Voter(Node n){ //TODO: binary opinion model refactor
         node = n;
         Random rand = new Random();
         politicalInterest = rand.nextGaussian();
@@ -71,21 +72,22 @@ public class Voter {
     }
 
     public void consumeMedia() {
+        mediaExposure = 0;
         if (rand.nextInt(2) < Math.abs(opinion)){
-            mediaExposure = mediaExposure + Integer.signum(opinion);
+            mediaExposure += Integer.signum(opinion);
         }
         if (rand.nextInt(3) < Math.abs(opinion)){
-            mediaExposure = mediaExposure + Integer.signum(opinion);
+            mediaExposure += Integer.signum(opinion);
         }
         if (rand.nextInt(4) < Math.abs(opinion)){
-            mediaExposure = mediaExposure + Integer.signum(opinion);
+            mediaExposure += Integer.signum(opinion);
         }
         if (opinion == 0){
             mediaExposure = rand.nextInt(7) - 3;
         }
     }
 
-/*    public void act(){
+ /*    public void act(){
 
 
         switch (ModelConstants.MODEL) {
@@ -177,9 +179,13 @@ public class Voter {
 
         tally = oldOpinion + ModelConstants.SOCIAL_INFLUENCE * socialExposure + ModelConstants.MEDIA_INFLUENCE * mediaExposure;
 
-        if (tally != opinion){
-            opinion += (int)(Math.signum(tally));
+        if ((Math.round(tally)) < opinion){
+            opinion -= 1;
         }
+        else if ((Math.round(tally)) > opinion){
+            opinion += 1;
+        }
+
 
         while(Math.abs(opinion) > 3){
             opinion = opinion - Integer.signum(opinion);
@@ -196,19 +202,52 @@ public class Voter {
     }
 
     public void selectDiscussants(){
-        if (ModelConstants.DISCUSSANTS_MODEL == 0){
-            discussants = getAdjacent();
+        switch (ModelConstants.DISCUSSANTS_MODEL){
+
+            case (1) : discussants = getAdjacent();
+
+            case (2) : //homophily
         }
     }
 
     public void discuss(){
-        int sum = 0;
-        for (Voter voter : discussants){
-            sum += voter.opinion;
-            if(voter.opinion * this.opinion < 0 || (this.opinion == 0 && voter.opinion != 0)){networkDisagreement++;}
-        }
-        socialExposure = (float)sum / discussants.size(); //mean average model
+        switch (ModelConstants.SOCIAL_INFLUENCE_MODEL){
 
-        //TODO majority model & Deffuant-Weisbuch bounded confidence model
+            case (1) :
+                //mean average
+                int sum = 0;
+                for (Voter voter : discussants) {
+                    sum += voter.opinion;
+                    if (voter.opinion * this.opinion < 0 || (this.opinion == 0 && voter.opinion != 0)) {
+                        networkDisagreement++;
+                    }
+                }
+                socialExposure = (float) sum / discussants.size();
+
+            case (2) :
+                //majority model
+
+                int maxValue = 0, maxCount = 0;
+
+                for (int i = 0; i < discussants.size(); ++i) {
+                    int count = 0;
+                    for (int j = 0; j < discussants.size(); ++j) {
+                        if (discussants.get(j).getAgentOpinion() == discussants.get(i).getAgentOpinion()) ++count;
+                    }
+                    if (count > maxCount) {
+                        maxCount = count;
+                        maxValue = discussants.get(i).getAgentOpinion();
+                    }
+                }
+
+                socialExposure = maxValue;
+
+
+            case (3) :
+                //Deffuant-Weisbuch
+
+        }
+
+        //TODO Deffuant-Weisbuch bounded confidence model
     }
 }
