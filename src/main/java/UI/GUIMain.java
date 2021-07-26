@@ -1,6 +1,8 @@
 package UI;
 
 import Simulator.ModelConstants;
+import Simulator._Graph;
+import org.graphstream.graph.implementations.DefaultGraph;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +13,10 @@ import java.awt.event.WindowEvent;
 public class GUIMain extends JFrame {
 
 
-    public static void main(String[] args) { (new GUIMain()).run(); }
+    public static void main(String[] args) {
+        System.setProperty("org.graphstream.ui", "swing");
+        (new GUIMain()).run();
+    }
 
     GUIParameterBox parameterBox;
     GUIControls controls;
@@ -64,12 +69,12 @@ public class GUIMain extends JFrame {
     void initialise(){
         try {
 
-            graphPanel.clearGraph();
+            //graphPanel.clearGraph();
 
             parameterBox.setModelConstants();
 
-            //new _Graph(graph);
-            //gen graph
+            graphPanel.setGraph(new _Graph().GetGraph());
+            //graphPanel.setGraph(new DefaultGraph("g2"));
 
         }
         catch (Exception e){

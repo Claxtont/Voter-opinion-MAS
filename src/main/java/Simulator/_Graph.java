@@ -1,6 +1,5 @@
 package Simulator;
 
-import UI.GUIGraph;
 import org.graphstream.algorithm.generator.DorogovtsevMendesGenerator;
 import org.graphstream.algorithm.generator.Generator;
 import org.graphstream.algorithm.generator.GridGenerator;
@@ -16,10 +15,9 @@ import java.util.ArrayList;
 public class _Graph {
 
     private DefaultGraph graph;
-    private Viewer viewer;
     private int size;
 
-    public _Graph(GUIGraph graphPanel) throws IOException {
+    public _Graph() throws IOException {
 
         graph = new DefaultGraph("_Graph");
         //viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
@@ -34,11 +32,13 @@ public class _Graph {
 
         size = ModelConstants.SIZE;
 
-        //display();
+        display();
         populate();
 
-        graphPanel.setGraph(graph);
 
+    }
+    public DefaultGraph GetGraph() {
+        return graph;
     }
 
     void sleep(int t) {
@@ -76,7 +76,7 @@ public class _Graph {
         }
 
         gen.end();
-        Viewer viewer = graph.display();
+        //Viewer viewer = graph.display();
 
     }
 
