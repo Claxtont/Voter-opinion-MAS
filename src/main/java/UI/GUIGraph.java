@@ -62,9 +62,10 @@ public class GUIGraph extends JPanel {
 
     public void clearGraph(){
         graph1.clear();
+        graph2.clear();
     }
 
-    public void setGraph(DefaultGraph graph){
+    public void setGraph(DefaultGraph graph){ //this is currently for testing
         graph1 = graph;
     }
 
