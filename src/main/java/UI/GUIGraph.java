@@ -25,35 +25,35 @@ public class GUIGraph extends JPanel {
     private void generateGraph(){
 
         graph1 = new DefaultGraph("g1");
-        //graph2 = new DefaultGraph("g2");
+        graph2 = new DefaultGraph("g2");
 
         //for each pipe
         ThreadProxyPipe pipe1 = new ThreadProxyPipe();
         pipe1.init(graph1);
-        //ThreadProxyPipe pipe2 = new ThreadProxyPipe();
-        //pipe2.init(graph2);
+        ThreadProxyPipe pipe2 = new ThreadProxyPipe();
+        pipe2.init(graph2);
 
         //for each view and viewer
         viewer1 = new SwingViewer(pipe1);
-        //viewer2 = new SwingViewer(pipe2);
+        viewer2 = new SwingViewer(pipe2);
 
         gen();
 
         view1 = new DefaultView(viewer1, "view1", new SwingGraphRenderer());
-        //view2 = new DefaultView(viewer2, "view2", new SwingGraphRenderer());
+        view2 = new DefaultView(viewer2, "view2", new SwingGraphRenderer());
         viewer1.addView(view1);
-        //viewer2.addView(view2);
+        viewer2.addView(view2);
         viewer1.enableAutoLayout();
-        //viewer2.enableAutoLayout();
+        viewer2.enableAutoLayout();
 
 
         //for each graph
         graph1.setAttribute("ui.quality");
-        //graph2.setAttribute("ui.quality");
+        graph2.setAttribute("ui.quality");
         graph1.setAttribute("ui.antialias");
-        //graph2.setAttribute("ui.antialias");
+        graph2.setAttribute("ui.antialias");
         graph1.setAttribute("ui.stylesheet", styleSheet1);
-        //graph2.setAttribute("ui.stylesheet", styleSheet2);
+        graph2.setAttribute("ui.stylesheet", styleSheet2);
 
         jPanels();
 
@@ -72,12 +72,14 @@ public class GUIGraph extends JPanel {
         DorogovtsevMendesGenerator gen = new DorogovtsevMendesGenerator();
 
         gen.addSink(graph1);
+        gen.addSink(graph2);
         gen.begin();
         for(int i = 0 ; i < 100; i++)
             gen.nextEvents();
         gen.end();
 
         gen.removeSink(graph1);
+        gen.removeSink(graph2);
     }
 
     private void jPanels(){
@@ -86,10 +88,10 @@ public class GUIGraph extends JPanel {
         panelView1.add(view1, BorderLayout.CENTER);
         this.add(panelView1);
 
-        //JPanel panelView2 = new JPanel(new BorderLayout());
-        //panelView2.add(view2, BorderLayout.CENTER);
+        JPanel panelView2 = new JPanel(new BorderLayout());
+        panelView2.add(view2, BorderLayout.CENTER);
 
-        //this.add(panelView2);
+        this.add(panelView2);
     }
 
     protected String styleSheet1 =
