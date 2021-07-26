@@ -1,34 +1,27 @@
 package Simulator;
-import org.graphstream.algorithm.generator.*;
+
+import UI.GUIGraph;
+import org.graphstream.algorithm.generator.DorogovtsevMendesGenerator;
+import org.graphstream.algorithm.generator.Generator;
+import org.graphstream.algorithm.generator.GridGenerator;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.MultiGraph;
-import org.graphstream.ui.view.ViewerPipe;
-import org.graphstream.ui.view.ViewerListener;
+import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.ui.view.Viewer;
 
-//import org.graphstream.ui.graphicGraph.stylesheet.StyleSheet;
-//import org.graphstream.ui.swing_viewer.ViewPanel;
-//import org.graphstream.ui.swing.*;
-//import org.graphstream.ui.swing_viewer.*;
-
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
 public class _Graph {
 
-    private Graph graph;
+    private DefaultGraph graph;
     private Viewer viewer;
     private int size;
 
-    public _Graph() throws IOException {
+    public _Graph(GUIGraph graphPanel) throws IOException {
 
-        System.setProperty("org.graphstream.ui", "org.graphstream.ui.swing.util.Display");
-
-        graph = new MultiGraph("_Graph");
+        graph = new DefaultGraph("_Graph");
         //viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
 
         //View view = viewer.addDefaultView(false);
@@ -41,9 +34,10 @@ public class _Graph {
 
         size = ModelConstants.SIZE;
 
-        display();
+        //display();
         populate();
 
+        graphPanel.setGraph(graph);
 
     }
 
@@ -81,12 +75,8 @@ public class _Graph {
             n.setAttribute("ui.color", (float)0.5);
         }
 
-
-        //graph.setAttribute("ui.color", (float)0.5);
-
         gen.end();
         Viewer viewer = graph.display();
-        viewer.getDefaultView().enableMouseOptions();
 
     }
 

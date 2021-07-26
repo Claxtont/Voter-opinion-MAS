@@ -15,7 +15,7 @@ public class Simulator {
         //field = new Field(ModelConstants.WIDTH, ModelConstants.HEIGHT, ModelConstants.MODEL);
         //System.out.println("Model constructed with height "+ ModelConstants.HEIGHT+" and width "+ ModelConstants.WIDTH);
         //view = new View(ModelConstants.WIDTH, ModelConstants.HEIGHT, this);
-        graph = new _Graph();
+        //graph = new _Graph();
         reset();
 
     }

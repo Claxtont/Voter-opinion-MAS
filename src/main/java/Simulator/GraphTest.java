@@ -1,5 +1,6 @@
 package Simulator;
 
+import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.stream.ProxyPipe;
 import org.graphstream.stream.Source;
 import org.graphstream.ui.graphicGraph.GraphicGraph;
@@ -20,21 +21,30 @@ public class GraphTest implements ViewerListener {
     private boolean loop = true;
 
     public void run(String[] args, JFrame frame) {
-        Graph graph  = new MultiGraph( "embeddedGraph" );
+        JPanel panel = new JPanel(new GridLayout()){
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(640, 480);
+            }
+        };
 
-        SwingViewer viewer = new SwingViewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+        panel.setBorder(BorderFactory.createLineBorder(Color.blue, 5));
+
+        Graph graph = new SingleGraph( "embeddedGraph", false, true );
+
+        //SwingViewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
         GraphRenderer renderer = new SwingGraphRenderer();
-        ViewPanel view = (ViewPanel) viewer.addView(SwingViewer.DEFAULT_VIEW_ID, renderer);
+        //ViewPanel viewPanel = viewer.addDefaultView(false);
 
-        frame.add(view);
+        //frame.add(viewPanel);
 
 
-        ViewerPipe pipeIn = viewer.newViewerPipe();
+        //ViewerPipe pipeIn = viewer.newViewerPipe();
         DorogovtsevMendesGenerator gen = new DorogovtsevMendesGenerator();
 
-        pipeIn.addAttributeSink( graph );
-        pipeIn.addViewerListener( this );
-        pipeIn.pump();
+        //pipeIn.addAttributeSink( graph );
+        //pipeIn.addViewerListener( this );
+        //pipeIn.pump();
 
         graph.setAttribute( "ui.default.title", "Layout Test" );
         graph.setAttribute( "ui.antialias" );
@@ -53,7 +63,7 @@ public class GraphTest implements ViewerListener {
         graph.forEach( n -> n.setAttribute( "ui.label", "truc" ));
 
         while( loop ) {
-            pipeIn.pump();
+            //pipeIn.pump();
             sleep( 10 );
         }
 
