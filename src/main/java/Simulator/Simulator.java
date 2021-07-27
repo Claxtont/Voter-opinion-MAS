@@ -9,26 +9,23 @@ public class Simulator {
     private _Graph graph;
     private int step;
 
-
     public Simulator() throws IOException {
-
         //field = new Field(ModelConstants.WIDTH, ModelConstants.HEIGHT, ModelConstants.MODEL);
         //System.out.println("Model constructed with height "+ ModelConstants.HEIGHT+" and width "+ ModelConstants.WIDTH);
         //view = new View(ModelConstants.WIDTH, ModelConstants.HEIGHT, this);
         //graph = new _Graph();
         reset();
+        graph = new _Graph();
+    }
 
+    public _Graph getGraph(){
+        return graph;
     }
 
     private void reset() {
         step = 0;
         //view.showStatus(step, field);
     }
-
-//    public void closeView()
-//    {
-//        this.view.setVisible(false);
-//    }
 
     public void simulateOneStep() {
         step++;

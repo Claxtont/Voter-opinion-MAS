@@ -1,6 +1,7 @@
 package UI;
 
 import Simulator.ModelConstants;
+import Simulator.Simulator;
 import Simulator._Graph;
 import org.graphstream.graph.implementations.DefaultGraph;
 
@@ -14,13 +15,13 @@ public class GUIMain extends JFrame {
 
 
     public static void main(String[] args) {
-        System.setProperty("org.graphstream.ui", "swing");
-        (new GUIMain()).run();
+        new GUIMain().run();
     }
 
     GUIParameterBox parameterBox;
     GUIControls controls;
     GUIGraph graphPanel;
+    Simulator simulator;
 
     private void run(){
 
@@ -51,6 +52,8 @@ public class GUIMain extends JFrame {
         add(graphPanel);
         setSize(800, 600);
         //this.pack();
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setUndecorated(true);
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
@@ -68,14 +71,9 @@ public class GUIMain extends JFrame {
 
     void initialise(){
         try {
-
-            //graphPanel.clearGraph();
-
             parameterBox.setModelConstants();
-
-            graphPanel.setGraph(new _Graph().GetGraph());
-            //graphPanel.setGraph(new DefaultGraph("g2"));
-
+            simulator = new Simulator();
+            graphPanel.setGraph(simulator.getGraph().getGraph());
         }
         catch (Exception e){
             JOptionPane.showMessageDialog(this, "Problem initialising graph. " + e.getMessage());

@@ -37,7 +37,7 @@ public class _Graph {
 
 
     }
-    public DefaultGraph GetGraph() {
+    public DefaultGraph getGraph() {
         return graph;
     }
 
@@ -46,7 +46,6 @@ public class _Graph {
     }
 
     public void display(){
-
 
         Generator gen = null;
         if (ModelConstants.GRAPH == 1) {
@@ -68,7 +67,7 @@ public class _Graph {
 
         for(int i=0; i<size; i++){
             gen.nextEvents();
-            sleep(5);
+            //sleep(5);
         }
 
         for (Node n: graph){
@@ -76,7 +75,6 @@ public class _Graph {
         }
 
         gen.end();
-        //Viewer viewer = graph.display();
 
     }
 
@@ -87,7 +85,7 @@ public class _Graph {
             System.out.println(n.toString());
             Voter v = (Voter)n.getAttribute("Voter");
             colour(v);
-            sleep(10);
+            //sleep(10);
         }
     }
 
