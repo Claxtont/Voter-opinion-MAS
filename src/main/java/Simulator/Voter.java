@@ -2,6 +2,7 @@ package Simulator;
 
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Node;
+import org.graphstream.stream.binary.ByteProxy;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -73,123 +74,70 @@ public class Voter {
 
     public void consumeMedia() {
         mediaExposure = 0;
-        if (rand.nextInt(2) < Math.abs(opinion)){
-            mediaExposure += Integer.signum(opinion);
+        if (ModelConstants.OPINION_MODEL == 2) {
+            if (rand.nextInt(2) < Math.abs(opinion)) {
+                mediaExposure += Integer.signum(opinion);
+            }
+            if (rand.nextInt(3) < Math.abs(opinion)) {
+                mediaExposure += Integer.signum(opinion);
+            }
+            if (rand.nextInt(4) < Math.abs(opinion)) {
+                mediaExposure += Integer.signum(opinion);
+            }
+            if (opinion == 0) {
+                mediaExposure = rand.nextInt(7) - 3;
+            }
         }
-        if (rand.nextInt(3) < Math.abs(opinion)){
-            mediaExposure += Integer.signum(opinion);
-        }
-        if (rand.nextInt(4) < Math.abs(opinion)){
-            mediaExposure += Integer.signum(opinion);
-        }
-        if (opinion == 0){
-            mediaExposure = rand.nextInt(7) - 3;
-        }
+        //todo: binary opinion media exposure
     }
-
- /*    public void act(){
-
-
-        switch (ModelConstants.MODEL) {
-            case 1:
-                actModel1();
-                break;
-            case 2:
-                actModel2();
-                break;
-
-        }
-    }
-
-    public void actModel1(){ //binary opinions
-        ArrayList<Voter> adj = f.adjacentVoters(width, height);
-        int count = 0;
-
-        for(Voter v: adj){
-            count += (v.getAgentOpinionBoolean() ? 1 : 0);
-        }
-        if(count > adj.size()/2){
-            opinionBoolean = true;
-        }
-        else if(count < adj.size()/2){
-            opinionBoolean = false;
-        }
-
-        //else leave the same
-        //System.out.println("boolean flipped" + this + opinionBoolean);
-    }
-
-    public void actModel2(){
-        //create a running tally of 3 factors
-        //1: previous attitude * decay factor
-        //2: opinions of those in political discussion group
-        //3: pro vs counter media exposure * proportion of discussants who have the same bias, (positive vs negative)
-
-        //1
-
-        float decayedOpinion = opinion * ModelConstants.OPINIONDECAY;
-
-        //2
-
-        ArrayList<Voter> adj = f.adjacentVoters(width, height);//TODO: change this. for now I will use all adjacent voters
-
-        float count = 0;
-        for(Voter v: adj){
-            count += v.getAgentOpinion();
-        }
-
-        float opinionDistribution = count / adj.size();
-
-        //3
-        float pro = 0, counter = 0;
-        for(Voter v: adj){
-            if (v.getAgentOpinion() * this.getAgentOpinion() >= 0){
-                pro++;
-            }
-            else{
-                counter++;
-            }
-        }
-        float ratio = pro/adj.size();
-
-        float tally3 = (float) ((Math.signum(opinion)) * 0.6 * ratio);
-
-        //calculate based off 1, 2, & 3
-        if (Math.round(decayedOpinion + opinionDistribution + tally3) > opinion){
-            opinion ++;
-            if (opinion > 3){
-                opinion = 3;
-            }
-        }
-        else if (Math.round(decayedOpinion + opinionDistribution + tally3) < opinion){
-            opinion --;
-            if (opinion < -3){
-                opinion = -3;
-            }
-        }
-
-
-    }*/
 
     public void updateOpinion(){
 
         float tally;
-        //old Opinion is old opinion multiplied by random value between 1-opinion decay and 1
-        float oldOpinion = opinion * ((1 - ModelConstants.OPINION_DECAY) + rand.nextFloat() * ModelConstants.OPINION_DECAY);
+        float oldOpinion;
+        if (ModelConstants.OPINION_MODEL == 2) {
+            oldOpinion = opinion * ((1 - ModelConstants.OPINION_DECAY) + rand.nextFloat() * ModelConstants.OPINION_DECAY);
 
-        tally = oldOpinion + ModelConstants.SOCIAL_INFLUENCE * socialExposure + ModelConstants.MEDIA_INFLUENCE * mediaExposure;
+            tally = oldOpinion + ModelConstants.SOCIAL_INFLUENCE * socialExposure + ModelConstants.MEDIA_INFLUENCE * mediaExposure;
 
-        if ((Math.round(tally)) < opinion){
-            opinion -= 1;
+            if ((Math.round(tally)) < opinion){
+                opinion -= 1;
+            }
+            else if ((Math.round(tally)) > opinion){
+                opinion += 1;
+            }
+
+            if ((Math.round(tally)) < opinion){
+                opinion -= 1;
+            }
+            else if ((Math.round(tally)) > opinion){
+                opinion += 1;
+            }
+
+            while(Math.abs(opinion) > 3){
+                opinion = opinion - Integer.signum(opinion);
+            }
         }
-        else if ((Math.round(tally)) > opinion){
-            opinion += 1;
+        else {
+            oldOpinion = (opinionBoolean ? 1:-1) * ((1 - ModelConstants.OPINION_DECAY) + rand.nextFloat() * ModelConstants.OPINION_DECAY);
+
+            tally = oldOpinion + ModelConstants.SOCIAL_INFLUENCE * socialExposure + ModelConstants.MEDIA_INFLUENCE * mediaExposure;
+
+            if (tally > 0) {
+                opinionBoolean = true;
+            }
+            else{
+                opinionBoolean = false;
+            }
         }
 
 
-        while(Math.abs(opinion) > 3){
-            opinion = opinion - Integer.signum(opinion);
-        }
+
+
+
+
+
+
     }
 
     public ArrayList<Voter> getAdjacent(){
@@ -217,9 +165,17 @@ public class Voter {
                 //mean average
                 int sum = 0;
                 for (Voter voter : discussants) {
-                    sum += voter.opinion;
-                    if (voter.opinion * this.opinion < 0 || (this.opinion == 0 && voter.opinion != 0)) {
-                        networkDisagreement++;
+                    if (ModelConstants.OPINION_MODEL == 2) {
+                        sum += voter.opinion;
+                        if (voter.opinion * this.opinion < 0 || (this.opinion == 0 && voter.opinion != 0)) {
+                            networkDisagreement++;
+                        }
+                    }
+                    else {
+                        sum += voter.opinionBoolean ? 1:-1;
+                        if (voter.opinionBoolean != this.opinionBoolean) {
+                            networkDisagreement++;
+                        }
                     }
                 }
                 socialExposure = (float) sum / discussants.size();
@@ -229,14 +185,28 @@ public class Voter {
 
                 int maxValue = 0, maxCount = 0;
 
-                for (int i = 0; i < discussants.size(); ++i) {
-                    int count = 0;
-                    for (int j = 0; j < discussants.size(); ++j) {
-                        if (discussants.get(j).getAgentOpinion() == discussants.get(i).getAgentOpinion()) ++count;
+                if (ModelConstants.OPINION_MODEL == 2) {
+                    for (int i = 0; i < discussants.size(); ++i) {
+                        int count = 0;
+                        for (int j = 0; j < discussants.size(); ++j) {
+                            if (discussants.get(j).getAgentOpinion() == discussants.get(i).getAgentOpinion()) ++count;
+                        }
+                        if (count > maxCount) {
+                            maxCount = count;
+                            maxValue = discussants.get(i).getAgentOpinion();
+                        }
                     }
-                    if (count > maxCount) {
-                        maxCount = count;
-                        maxValue = discussants.get(i).getAgentOpinion();
+                }
+                else {
+                    for (int i = 0; i < discussants.size(); ++i) {
+                        int count = 0;
+                        for (int j = 0; j < discussants.size(); ++j) {
+                            if (discussants.get(j).getAgentOpinionBoolean() == discussants.get(i).getAgentOpinionBoolean()) ++count;
+                        }
+                        if (count > maxCount) {
+                            maxCount = count;
+                            maxValue = discussants.get(i).getAgentOpinionBoolean() ? 1:-1;
+                        }
                     }
                 }
 

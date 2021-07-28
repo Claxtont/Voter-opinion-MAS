@@ -49,6 +49,8 @@ public class GUIParameterBox extends JPanel {
         ModelConstants.SIZE = (int) graphSize.getValue();
         ModelConstants.GRAPH = graph.getSelectedIndex() + 1;
         ModelConstants.OPINION_MODEL = model.getSelectedIndex() + 1;
+        ModelConstants.DISCUSSANTS_MODEL = discussantSelectionModel.getSelectedIndex() + 1;
+        ModelConstants.OPINION_UPDATE_MODEL = opinionUpdateModel.getSelectedIndex() + 1;
         ModelConstants.OPINION_DECAY = (float) opinionDecay.getValue();
         ModelConstants.MEDIA_INFLUENCE = (float) mediaInfluence.getValue();
         ModelConstants.SOCIAL_INFLUENCE = (float) socialInfluence.getValue();

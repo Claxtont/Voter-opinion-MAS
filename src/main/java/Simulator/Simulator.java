@@ -1,5 +1,4 @@
 package Simulator;
-import org.graphstream.graph.Graph;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,10 +9,6 @@ public class Simulator {
     private int step;
 
     public Simulator() throws IOException {
-        //field = new Field(ModelConstants.WIDTH, ModelConstants.HEIGHT, ModelConstants.MODEL);
-        //System.out.println("Model constructed with height "+ ModelConstants.HEIGHT+" and width "+ ModelConstants.WIDTH);
-        //view = new View(ModelConstants.WIDTH, ModelConstants.HEIGHT, this);
-        //graph = new _Graph();
         reset();
         graph = new _Graph();
     }
@@ -32,14 +27,11 @@ public class Simulator {
 
         ArrayList<Voter> voters = graph.getVoters();
 
-        act7PointScale(voters);
-    }
-
-    private void actBinaryModel(){
+        act(voters);
 
     }
 
-    private void act7PointScale(ArrayList<Voter> voters){
+    private void act(ArrayList<Voter> voters){
         //watch media
         for (Voter voter: voters){
             voter.consumeMedia();
