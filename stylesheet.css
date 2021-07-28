@@ -4,7 +4,7 @@ node  {
     text-background-mode: rounded-box;
     text-alignment: at-right;
 	size: 20px, 20px;
-	shape: box;
+	shape: rounded-box;
 }
 node.om3  {fill-color: rgb(255,0,0); }
 node.om2  {fill-color: rgb(170,0,0); }

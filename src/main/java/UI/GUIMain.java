@@ -84,8 +84,8 @@ public class GUIMain extends JFrame {
         int i = 1;
         try{
             for (i = 1; i <= ModelConstants.STEP_LENGTH; i++){
-                //s.simulateOneStep();
-                Thread.sleep(200);
+                simulator.simulateOneStep();
+                Thread.sleep(20);
             }
 
         }
@@ -97,7 +97,7 @@ public class GUIMain extends JFrame {
     void runSimulationOnce(){
 
         try{
-            //s.simulateOneStep();
+            simulator.simulateOneStep();
         }
         catch (Exception e){
             JOptionPane.showMessageDialog(this, "Problem simulating the next step. " + e.getMessage());
