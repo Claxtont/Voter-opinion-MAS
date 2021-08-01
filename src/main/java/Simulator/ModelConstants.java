@@ -1,6 +1,9 @@
 package Simulator;
 
+import java.util.Random;
+
 public class ModelConstants {
+
 
     public static int STEP_LENGTH = 50;
 
@@ -19,7 +22,11 @@ public class ModelConstants {
     public static int OPINION_UPDATE_MODEL = 1;
     //1 = weighted mean average, 2 = current social only, 3 = social and media TODO: check this fully
 
+    public static float HOMOPHILY_PROPENSITY = (float)0.6;
+    public static float BASE_DISCUSSANTS = (float)0.3;
     public static float OPINION_DECAY = (float)0.7;
     public static float MEDIA_INFLUENCE = (float)0.7;
     public static float SOCIAL_INFLUENCE = 1;
+
+    public static Random RANDOM = new Random();
 }

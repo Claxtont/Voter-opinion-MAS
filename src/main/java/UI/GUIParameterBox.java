@@ -3,10 +3,11 @@ package UI;
 import Simulator.ModelConstants;
 
 import javax.swing.*;
+import java.util.Random;
 
 public class GUIParameterBox extends JPanel {
 
-    private LabelledTextArea opinionDecay, mediaInfluence, graphSize, socialInfluence;
+    private LabelledTextArea opinionDecay, mediaInfluence, graphSize, socialInfluence, seed;
     private JComboBox model, graph, socialInfluenceModel, discussantSelectionModel, opinionUpdateModel;
 
     private String[] models = {"opinion model 1, binary opinion", "opinion model 2, 7 point opinion scale"};
@@ -20,6 +21,7 @@ public class GUIParameterBox extends JPanel {
         opinionDecay = new LabelledTextArea("Voter opinion decay", String.valueOf(ModelConstants.OPINION_DECAY));
         mediaInfluence = new LabelledTextArea("Media Influence on voters", String.valueOf(ModelConstants.MEDIA_INFLUENCE));
         socialInfluence = new LabelledTextArea("Social Influence on voters", String.valueOf(ModelConstants.SOCIAL_INFLUENCE));
+        seed = new LabelledTextArea("seed", "999");
 
         model = new JComboBox(models);
         graph = new JComboBox(graphs);
@@ -40,6 +42,7 @@ public class GUIParameterBox extends JPanel {
         add(opinionDecay);
         add(mediaInfluence);
         add(socialInfluence);
+        add(seed);
 
 
     }
@@ -54,6 +57,7 @@ public class GUIParameterBox extends JPanel {
         ModelConstants.OPINION_DECAY = (float) opinionDecay.getValue();
         ModelConstants.MEDIA_INFLUENCE = (float) mediaInfluence.getValue();
         ModelConstants.SOCIAL_INFLUENCE = (float) socialInfluence.getValue();
+        ModelConstants.RANDOM = new Random((long)seed.getValue());
 
     }
 }
