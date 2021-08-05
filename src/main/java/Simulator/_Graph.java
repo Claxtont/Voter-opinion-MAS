@@ -81,7 +81,7 @@ public class _Graph {
     public void populate(){
         for(Node n: graph){
             n.setAttribute("Voter",new Voter(n));
-            n.setAttribute("ui.label", n.toString());
+            //n.setAttribute("ui.label", n.toString());
             System.out.println(n.toString());
             Voter v = (Voter)n.getAttribute("Voter");
             colour(v);

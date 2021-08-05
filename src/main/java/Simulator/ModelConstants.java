@@ -4,7 +4,6 @@ import java.util.Random;
 
 public class ModelConstants {
 
-
     public static int STEP_LENGTH = 50;
 
     public static int SIZE = 100;
@@ -21,6 +20,8 @@ public class ModelConstants {
     //1 = all adjacent voters are the voter's discussants, 2 = homophilly based
     public static int OPINION_UPDATE_MODEL = 1;
     //1 = weighted mean average, 2 = current social only, 3 = social and media TODO: check this fully
+    public static int CHART = 1;
+    //1 = BarChart
 
     public static float HOMOPHILY_PROPENSITY = (float)0.6;
     public static float BASE_DISCUSSANTS = (float)0.3;

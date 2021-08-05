@@ -7,6 +7,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Voter {
 
@@ -133,8 +134,18 @@ public class Voter {
         return result;
     }
 
+    public ArrayList<Voter> getShuffledAdjacent() {
+        Node adj[] = node.neighborNodes().toArray(Node[]::new);
+        ArrayList<Voter> result = new ArrayList<>();
+        for (Node n : adj) {
+            result.add((Voter) n.getAttribute("Voter"));
+        }
+        Collections.shuffle(result, ModelConstants.RANDOM);
+        return result;
+    }
+
     public float opinionSimularity(Voter v) {
-        return 6 - (Math.abs(v.getAgentOpinion() - this.getAgentOpinion()) / 6);
+        return (6 - (Math.abs(v.getAgentOpinion() - this.getAgentOpinion()) / 6));
     }
 
 
@@ -143,13 +154,15 @@ public class Voter {
 
             case (1):
                 discussants = getAdjacent();
+                break;
 
             case (2): //homophily
-                for (Voter adjVoter : getAdjacent()) {
+                discussants.clear();
+                for (Voter adjVoter : getShuffledAdjacent()) {
 
                     int count = 0;
                     for (Voter discussant : discussants) {
-                        if (opinionSimularity(discussant) >= ModelConstants.HOMOPHILY_PROPENSITY) {
+                        if (opinionSimularity(discussant) >= ModelConstants.HOMOPHILY_PROPENSITY) {//todo: this is broken as shit
                             count++;
                         }
                     }
@@ -164,6 +177,7 @@ public class Voter {
                         }
                     }
                 }
+                break;
         }
     }
 

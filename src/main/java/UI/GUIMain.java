@@ -4,11 +4,24 @@ import Simulator.ModelConstants;
 import Simulator.Simulator;
 import Simulator._Graph;
 import org.graphstream.graph.implementations.DefaultGraph;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.block.BlockBorder;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.title.TextTitle;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
+import static UI.GUIChart.*;
 
 
 public class GUIMain extends JFrame {
@@ -21,6 +34,8 @@ public class GUIMain extends JFrame {
     GUIParameterBox parameterBox;
     GUIControls controls;
     GUIGraph graphPanel;
+    ChartPanel chartPanel;
+    JFreeChart chart;
     Simulator simulator;
 
     private void run(){
@@ -43,13 +58,16 @@ public class GUIMain extends JFrame {
         controls = new GUIControls(this);
         panelViewTop.add(controls);
 
+        JPanel panelViewBottom = new JPanel(new GridLayout(1,0));
         graphPanel = new GUIGraph();
-
         graphPanel.setLayout(new GridLayout(1,0));
+        panelViewBottom.add(graphPanel);
 
+        chartPanel = new ChartPanel(createChart(), false);
+        panelViewBottom.add(chartPanel);
 
         add(panelViewTop);
-        add(graphPanel);
+        add(panelViewBottom);
         setSize(800, 600);
         //this.pack();
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -74,6 +92,8 @@ public class GUIMain extends JFrame {
             parameterBox.setModelConstants();
             simulator = new Simulator();
             graphPanel.setGraph(simulator.getGraph().getGraph());
+            chartPanel.setChart(new GUIChart().createChart());
+            simulator.updateGraphData();
         }
         catch (Exception e){
             JOptionPane.showMessageDialog(this, "Problem initialising graph. " + e.getMessage());

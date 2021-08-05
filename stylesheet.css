@@ -1,8 +1,8 @@
 
 
 node  {
-    text-background-mode: rounded-box;
-    text-alignment: at-right;
+    /*text-background-mode: rounded-box;*/
+    /*text-alignment: at-right;*/
 	size: 20px, 20px;
 	shape: rounded-box;
 }
