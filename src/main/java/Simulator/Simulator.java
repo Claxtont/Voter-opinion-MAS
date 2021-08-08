@@ -74,6 +74,8 @@ public class Simulator {
             voter.selectDiscussants();
         }
 
+        graph.graphDiscussants(voters);
+
         //discuss
         for (Voter voter: voters){
             voter.discuss();

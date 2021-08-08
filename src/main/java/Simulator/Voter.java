@@ -145,96 +145,170 @@ public class Voter {
     }
 
     public float opinionSimularity(Voter v) {
-        return (6 - (Math.abs(v.getAgentOpinion() - this.getAgentOpinion()) / 6));
+        return ((6 - Math.abs(v.getAgentOpinion() - this.getAgentOpinion())) / 6);
     }
 
 
     public void selectDiscussants() {
-        switch (ModelConstants.DISCUSSANTS_MODEL) {
+        discussants.clear();
+        if (ModelConstants.DISCUSSANTS_MODEL == 1) {
 
-            case (1):
                 discussants = getAdjacent();
-                break;
+        }
 
-            case (2): //homophily
-                discussants.clear();
-                for (Voter adjVoter : getShuffledAdjacent()) {
+        else{
 
-                    int count = 0;
-                    for (Voter discussant : discussants) {
-                        if (opinionSimularity(discussant) >= ModelConstants.HOMOPHILY_PROPENSITY) {//todo: this is broken as shit
+            int count = 0;
+            ArrayList<Voter> neighbours = getShuffledAdjacent();
+            ArrayList<Integer> neighboursToRemove = new ArrayList<Integer>();
+            for (int i = 0; i < ModelConstants.BASE_DISCUSSANTS * 10; i++){
+                discussants.add(neighbours.get(i));
+                neighboursToRemove.add(i);
+
+                if (opinionSimularity(neighbours.get(i)) >= ModelConstants.HOMOPHILY_PROPENSITY) {
+                    count++;
+                }
+
+            }
+            if (neighboursToRemove != null){
+                for (int n: neighboursToRemove) {
+                    neighbours.remove(n);
+                }
+            }
+
+            neighboursToRemove.clear();
+
+            //this adds discussants of the nearest opinion value
+            int i  = 0;
+            while (count / getAdjacent().size() <= ModelConstants.BASE_DISCUSSANTS/10 && neighbours.size() <= neighboursToRemove.size()) {
+
+                if (neighbours.size() != 0) {
+                    for (Voter n : neighbours) {
+                        if (opinionSimularity(n) >= 1 - (i / 6)) {
+                            discussants.add(n);
+                            neighboursToRemove.add(neighbours.indexOf(n));
                             count++;
                         }
                     }
+                }
+                i++;
+            }
 
-                    if (count / getAdjacent().size() <= ModelConstants.HOMOPHILY_PROPENSITY) {
-                        if (ModelConstants.RANDOM.nextFloat() < ModelConstants.BASE_DISCUSSANTS) {
-                            discussants.add(adjVoter);
-                        }
-                    } else {
-                        if (opinionSimularity(adjVoter) > ModelConstants.HOMOPHILY_PROPENSITY) {
-                            discussants.add(adjVoter);
-                        }
+            if (neighboursToRemove != null){
+                for (int n: neighboursToRemove) {
+                    neighbours.remove(n);
+                }
+            }
+
+            /* this adds randomly weighted for opinion simularity
+            while (count / getAdjacent().size() <= ModelConstants.HOMOPHILY_PROPENSITY && neighbours.size() != 0) {
+                if (ModelConstants.RANDOM.nextFloat() < opinionSimularity(neighbours.get(i))){
+                    discussants.add(neighbours.get(i));
+                    count ++;
+                }
+
+                i++;
+            }
+            */
+
+            /* This is the java implementation of the code used in the original paper
+            for (Voter adjVoter : getShuffledAdjacent()) {
+
+                int count = 0;
+                for (Voter discussant : discussants) {
+                    if (opinionSimularity(discussant) >= ModelConstants.HOMOPHILY_PROPENSITY) {
+                        count++;
                     }
                 }
-                break;
+
+                if (count / getAdjacent().size() <= ModelConstants.HOMOPHILY_PROPENSITY) {
+                    if (ModelConstants.RANDOM.nextFloat() < ModelConstants.BASE_DISCUSSANTS) {
+                        discussants.add(adjVoter);
+                    }
+                }
+                else {
+                    if (opinionSimularity(adjVoter) > ModelConstants.HOMOPHILY_PROPENSITY) {
+                        discussants.add(adjVoter);
+                    }
+                }
+            }
+
+            repeat count neighbors  ;; for every neighbors
+       [ let neighbor one-of turtles-on neighbors ;; define one of neighboring agents as "neighbor"
+         let q random-float 1
+         ifelse q < propensity-for-homophily  ;; if random number is less than propensity-for-homophily, create link with that neighbor with similarity of +-0.2 range of propensity-for-homophily
+         [ if ((propensity-for-homophily - 0.2) <= (similarity-between neighbor self)) and ((similarity-between neighbor self) <= (propensity-for-homophily + 0.2)) [create-link-with neighbor] ]
+         [ if random-float 1 < 0.5 [create-link-with neighbor]] ;; if greater, creat link at random basis
+
+         ;; this results in a situation where
+         ;; (a) for greater value of "propensity-for-homophily" (e.g., 0.8), selection of discussants based on homophily is more prevalent while there's still random connections
+         ;; (b) for smaller value of "propensity-for-homophily" (e.g., 0.2), random selection is more prevalent
+       ] ; end repeat
+
+  set my-connected-neighbors link-neighbors  ;; define the agent-set "my-connected-neighbors" from linked neighbors
+  ask links [die] ]  ;; clear links for next tick
+
+            */
         }
     }
 
     public void discuss() {
-        switch (ModelConstants.SOCIAL_INFLUENCE_MODEL) {
-
-            case (1):
-                //mean average
-                int sum = 0;
-                for (Voter voter : discussants) {
-                    if (ModelConstants.OPINION_MODEL == 2) {
-                        sum += voter.opinion;
-                        if (voter.opinion * this.opinion < 0 || (this.opinion == 0 && voter.opinion != 0)) {
-                            networkDisagreement++;
-                        }
-                    } else {
-                        sum += voter.opinionBoolean ? 1 : -1;
-                        if (voter.opinionBoolean != this.opinionBoolean) {
-                            networkDisagreement++;
-                        }
-                    }
-                }
-                socialExposure = (float) sum / discussants.size();
-
-            case (2):
-                //majority model
-
-                int maxValue = 0, maxCount = 0;
-
+        if (ModelConstants.SOCIAL_INFLUENCE_MODEL == 1) {
+            //mean average
+            int sum = 0;
+            for (Voter voter : discussants) {
                 if (ModelConstants.OPINION_MODEL == 2) {
-                    for (int i = 0; i < discussants.size(); ++i) {
-                        int count = 0;
-                        for (int j = 0; j < discussants.size(); ++j) {
-                            if (discussants.get(j).getAgentOpinion() == discussants.get(i).getAgentOpinion()) ++count;
-                        }
-                        if (count > maxCount) {
-                            maxCount = count;
-                            maxValue = discussants.get(i).getAgentOpinion();
-                        }
+                    sum += voter.opinion;
+                    if (voter.opinion * this.opinion < 0 || (this.opinion == 0 && voter.opinion != 0)) {
+                        networkDisagreement++;
                     }
                 } else {
-                    for (int i = 0; i < discussants.size(); ++i) {
-                        int count = 0;
-                        for (int j = 0; j < discussants.size(); ++j) {
-                            if (discussants.get(j).getAgentOpinionBoolean() == discussants.get(i).getAgentOpinionBoolean())
-                                ++count;
-                        }
-                        if (count > maxCount) {
-                            maxCount = count;
-                            maxValue = discussants.get(i).getAgentOpinionBoolean() ? 1 : -1;
-                        }
+                    sum += voter.opinionBoolean ? 1 : -1;
+                    if (voter.opinionBoolean != this.opinionBoolean) {
+                        networkDisagreement++;
                     }
                 }
+            }
+            socialExposure = (float) sum / discussants.size();
+        }
+        else{
 
-                socialExposure = maxValue;
+            //majority model
+
+            int maxValue = 0, maxCount = 0;
+
+            if (ModelConstants.OPINION_MODEL == 2) {
+                for (int i = 0; i < discussants.size(); ++i) {
+                    int count = 0;
+                    for (int j = 0; j < discussants.size(); ++j) {
+                        if (discussants.get(j).getAgentOpinion() == discussants.get(i).getAgentOpinion()) ++count;
+                    }
+                    if (count > maxCount) {
+                        maxCount = count;
+                        maxValue = discussants.get(i).getAgentOpinion();
+                    }
+                }
+            } else {
+                for (int i = 0; i < discussants.size(); ++i) {
+                    int count = 0;
+                    for (int j = 0; j < discussants.size(); ++j) {
+                        if (discussants.get(j).getAgentOpinionBoolean() == discussants.get(i).getAgentOpinionBoolean())
+                            ++count;
+                    }
+                    if (count > maxCount) {
+                        maxCount = count;
+                        maxValue = discussants.get(i).getAgentOpinionBoolean() ? 1 : -1;
+                    }
+                }
+            }
+
+            socialExposure = maxValue;
 
         }
 
+    }
+
+    public ArrayList<Voter> getDisscussants() {
+        return discussants;
     }
 }

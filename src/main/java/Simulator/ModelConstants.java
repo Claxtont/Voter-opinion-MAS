@@ -24,7 +24,7 @@ public class ModelConstants {
     //1 = BarChart
 
     public static float HOMOPHILY_PROPENSITY = (float)0.6;
-    public static float BASE_DISCUSSANTS = (float)0.3;
+    public static float BASE_DISCUSSANTS = (float)0.2;
     public static float OPINION_DECAY = (float)0.7;
     public static float MEDIA_INFLUENCE = (float)0.7;
     public static float SOCIAL_INFLUENCE = 1;

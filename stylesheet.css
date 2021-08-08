@@ -19,5 +19,10 @@ node.o3  {fill-color: rgb(0,0,255); }
 node:clicked {size: 30px, 30px;}
 
 edge {
-
+	shape: line;
+	fill-color: rgb(0,0,0);
+	arrow-size: 3px, 2px;
 }
+
+edge.blank {fill-color: rgb(0,0,0);}
+edge.discussant {fill-color: rgb(255, 20, 20);}

@@ -65,7 +65,7 @@ public class _Graph {
         gen.addSink(graph);
         gen.begin();
 
-        for(int i=0; i<size; i++){
+        for(int i=0; i<size-1; i++){
             gen.nextEvents();
             //sleep(5);
         }
@@ -115,11 +115,9 @@ public class _Graph {
 
     public Node getNode(Voter v){
         Node result = null;
-        int i = 0;
-        while (result == null){
+        for (int i = 0; i < graph.nodes().count(); i++){
             if (graph.getNode(i).getAttribute("Voter") == v){
                 result = graph.getNode(i);
-                i++;
             }
         }
         return result;
@@ -131,6 +129,16 @@ public class _Graph {
             result.add((Voter)n.getAttribute("Voter"));
         }
         return result;
+    }
+
+    public void graphDiscussants(ArrayList<Voter> voters){
+        graph.forEach(edges -> edges.setAttribute("ui.class", "blank"));
+        //Voter v = voters.get(0);
+        for (Voter v : voters) {
+            for (Voter d : v.getDisscussants()){
+                getNode(v).getEdgeBetween(getNode(d)).setAttribute("ui.class", "discussant");
+            }
+        }
     }
 
 }
