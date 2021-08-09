@@ -3,14 +3,14 @@ package Simulator;
 import org.graphstream.algorithm.generator.DorogovtsevMendesGenerator;
 import org.graphstream.algorithm.generator.Generator;
 import org.graphstream.algorithm.generator.GridGenerator;
-import org.graphstream.graph.Graph;
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
-import org.graphstream.ui.view.Viewer;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class _Graph {
 
@@ -58,7 +58,7 @@ public class _Graph {
             size = (int) Math.sqrt(size);
         }
 
-        else if(ModelConstants.GRAPH == 3){
+        if(ModelConstants.GRAPH == 3){
             gen = new DorogovtsevMendesGenerator();
         }
 
@@ -68,10 +68,6 @@ public class _Graph {
         for(int i=0; i<size-1; i++){
             gen.nextEvents();
             //sleep(5);
-        }
-
-        for (Node n: graph){
-            n.setAttribute("ui.color", (float)0.5);
         }
 
         gen.end();
@@ -132,7 +128,9 @@ public class _Graph {
     }
 
     public void graphDiscussants(ArrayList<Voter> voters){
-        graph.forEach(edges -> edges.setAttribute("ui.class", "blank"));
+        for (int i = 0; i < graph.getEdgeCount(); i++){
+            graph.getEdge(i).setAttribute("ui.class", "blank");
+        }
         //Voter v = voters.get(0);
         for (Voter v : voters) {
             for (Voter d : v.getDisscussants()){
@@ -142,4 +140,3 @@ public class _Graph {
     }
 
 }
-

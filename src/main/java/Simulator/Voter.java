@@ -4,10 +4,7 @@ import org.graphstream.graph.Element;
 import org.graphstream.graph.Node;
 import org.graphstream.stream.binary.ByteProxy;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 public class Voter {
 
@@ -160,10 +157,17 @@ public class Voter {
 
             int count = 0;
             ArrayList<Voter> neighbours = getShuffledAdjacent();
-            ArrayList<Integer> neighboursToRemove = new ArrayList<Integer>();
-            for (int i = 0; i < ModelConstants.BASE_DISCUSSANTS * 10; i++){
+            ArrayList<Voter> neighboursToRemove = new ArrayList<>();
+
+            /*Iterator<Voter> itr = neighbours.iterator();
+            while ( itr.hasNext()) {
+                Voter neighbour = itr.next();
+                if
+            }*/
+
+            for (int i = (int)(ModelConstants.BASE_DISCUSSANTS * 10); i > 0; i--){
                 discussants.add(neighbours.get(i));
-                neighboursToRemove.add(i);
+                neighboursToRemove.add(neighbours.get(i));
 
                 if (opinionSimularity(neighbours.get(i)) >= ModelConstants.HOMOPHILY_PROPENSITY) {
                     count++;
@@ -171,33 +175,26 @@ public class Voter {
 
             }
             if (neighboursToRemove != null){
-                for (int n: neighboursToRemove) {
-                    neighbours.remove(n);
-                }
+                neighbours.removeAll(neighboursToRemove);
             }
 
             neighboursToRemove.clear();
 
             //this adds discussants of the nearest opinion value
             int i  = 0;
-            while (count / getAdjacent().size() <= ModelConstants.BASE_DISCUSSANTS/10 && neighbours.size() <= neighboursToRemove.size()) {
-
-                if (neighbours.size() != 0) {
+            while (count / getAdjacent().size() <= ModelConstants.BASE_DISCUSSANTS*10 && neighbours.size() > neighboursToRemove.size()) {
                     for (Voter n : neighbours) {
                         if (opinionSimularity(n) >= 1 - (i / 6)) {
                             discussants.add(n);
-                            neighboursToRemove.add(neighbours.indexOf(n));
+                            neighboursToRemove.add(n);
                             count++;
                         }
-                    }
                 }
                 i++;
             }
 
             if (neighboursToRemove != null){
-                for (int n: neighboursToRemove) {
-                    neighbours.remove(n);
-                }
+                neighbours.removeAll(neighboursToRemove);
             }
 
             /* this adds randomly weighted for opinion simularity
