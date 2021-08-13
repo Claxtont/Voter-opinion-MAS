@@ -11,6 +11,8 @@ import org.graphstream.ui.view.Viewer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class GUIGraph extends JPanel {
 
@@ -46,7 +48,13 @@ public class GUIGraph extends JPanel {
 
         graph.setAttribute("ui.quality");
         graph.setAttribute("ui.antialias");
-        graph.setAttribute("ui.stylesheet", styleSheet1);
+         String styleSheet = null;
+         try {
+             styleSheet = Files.readString(java.nio.file.Path.of("stylesheet.css"));
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+         graph.setAttribute("ui.stylesheet", styleSheet);
 
         jPanels(view);
     }
@@ -71,14 +79,4 @@ public class GUIGraph extends JPanel {
         this.add(panelView);
         this.updateUI();
     }
-
-    protected String styleSheet1 =
-            "graph { padding: 40px; }" +
-                    "node { fill-color: red; stroke-mode: plain; stroke-color: black; }";
-
-    protected String styleSheet2 =
-            "graph { padding: 40px; }" +
-                    "node { fill-color: blue; stroke-mode: plain; stroke-color: black; }";
-
-
 }

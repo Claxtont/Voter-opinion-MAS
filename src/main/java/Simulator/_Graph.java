@@ -3,14 +3,12 @@ package Simulator;
 import org.graphstream.algorithm.generator.DorogovtsevMendesGenerator;
 import org.graphstream.algorithm.generator.Generator;
 import org.graphstream.algorithm.generator.GridGenerator;
-import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class _Graph {
 
@@ -133,8 +131,10 @@ public class _Graph {
         }
         //Voter v = voters.get(0);
         for (Voter v : voters) {
-            for (Voter d : v.getDisscussants()){
-                getNode(v).getEdgeBetween(getNode(d)).setAttribute("ui.class", "discussant");
+            for (Voter d : v.getDiscussants()){
+                if (d != v){
+                    getNode(v).getEdgeBetween(getNode(d)).setAttribute("ui.class", "discussant");
+                }
             }
         }
     }

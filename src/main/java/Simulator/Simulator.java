@@ -2,7 +2,7 @@ package Simulator;
 
 import UI.GUIChart;
 import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.xy.XYSeries;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ public class Simulator {
 
     private _Graph graph;
     private int step;
+
 
     public Simulator() throws IOException {
         reset();
@@ -21,10 +22,11 @@ public class Simulator {
         return graph;
     }
 
-    public CategoryDataset updateGraphData(){
+    public void updateChartData(){
+
+        ArrayList<Voter> voters = graph.getVoters();
+
         if (ModelConstants.CHART == 1){
-            ArrayList<Voter> voters = graph.getVoters();
-            //DefaultCategoryDataset dataset = new DefaultCategoryDataset();
             int on3 = 0, on2 =0, on1 = 0, o0 = 0, o1 = 0, o2 = 0, o3 =0;
 
             for (Voter v: voters) {
@@ -45,7 +47,25 @@ public class Simulator {
             GUIChart.dataset.addValue(o2,"2","Opinion");
             GUIChart.dataset.addValue(o3,"3","Opinion");
         }
-        return null;
+        else if (ModelConstants.CHART == 2){
+            //get variance at this time step. ammend it to the chart
+            double mean,sum = 0, variance;
+            for (Voter v: voters){
+                sum += v.getAgentOpinion();
+            }
+            mean = sum/voters.size();
+            sum = 0;
+
+            for (Voter v: voters){
+                sum += Math.pow((v.getAgentOpinion()-mean), 2);
+            }
+
+            variance = sum/(voters.size()-1);
+            System.out.println("variance = " + variance);
+
+
+            GUIChart.lineDataset.getSeries("graph " + GUIChart.graphNum).add(step, variance);
+        }
     }
 
     private void reset() {
@@ -60,7 +80,7 @@ public class Simulator {
 
         act(voters);
 
-        updateGraphData();
+        updateChartData();
     }
 
     private void act(ArrayList<Voter> voters){

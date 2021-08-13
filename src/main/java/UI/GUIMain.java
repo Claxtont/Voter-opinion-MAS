@@ -2,19 +2,8 @@ package UI;
 
 import Simulator.ModelConstants;
 import Simulator.Simulator;
-import Simulator._Graph;
-import org.graphstream.graph.implementations.DefaultGraph;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.block.BlockBorder;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.title.TextTitle;
-import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
 import java.awt.*;
@@ -93,7 +82,7 @@ public class GUIMain extends JFrame {
             simulator = new Simulator();
             graphPanel.setGraph(simulator.getGraph().getGraph());
             chartPanel.setChart(new GUIChart().createChart());
-            simulator.updateGraphData();
+            simulator.updateChartData();
         }
         catch (Exception e){
             JOptionPane.showMessageDialog(this, "Problem initialising graph. " + e.getMessage());

@@ -1,9 +1,7 @@
 package Simulator;
 
-import org.graphstream.graph.Element;
 import org.graphstream.graph.Node;
-import org.graphstream.stream.binary.ByteProxy;
-import java.lang.reflect.Array;
+
 import java.util.*;
 
 public class Voter {
@@ -12,14 +10,14 @@ public class Voter {
     private Boolean opinionBoolean;
     private int mediaExposure;
     private int networkOpinionDistribution;
-    private int networkHomogeneity;
+    private float networkHomogeneity;
     private double politicalInterest;
     private ArrayList<Voter> discussants = new ArrayList<>();
     private float socialExposure;
     private int networkDisagreement;
     private Node node;
 
-    public Voter(Node n) { //TODO: binary opinion model refactor
+    public Voter(Node n) {
         node = n;
         politicalInterest = ModelConstants.RANDOM.nextGaussian();
         if (politicalInterest > 1) {
@@ -46,6 +44,8 @@ public class Voter {
         } else {
             opinionBoolean = false;
         }
+
+        networkHomogeneity = (float)0.5;
     }
 
     public Node getNode() {
@@ -66,21 +66,59 @@ public class Voter {
 
     public void consumeMedia() {
         mediaExposure = 0;
-        if (ModelConstants.OPINION_MODEL == 2) {
-            if (ModelConstants.RANDOM.nextInt(2) < Math.abs(opinion)) {
-                mediaExposure += Integer.signum(opinion);
-            }
-            if (ModelConstants.RANDOM.nextInt(3) < Math.abs(opinion)) {
-                mediaExposure += Integer.signum(opinion);
-            }
-            if (ModelConstants.RANDOM.nextInt(4) < Math.abs(opinion)) {
-                mediaExposure += Integer.signum(opinion);
-            }
-            if (opinion == 0) {
-                mediaExposure = ModelConstants.RANDOM.nextInt(7) - 3;
+        if (ModelConstants.NETWORK_HOMOGENEITY_IMPACT == 0) {
+            if (ModelConstants.OPINION_MODEL == 2) {
+                if (ModelConstants.RANDOM.nextInt(2) < Math.abs(opinion)) {
+                    mediaExposure += Integer.signum(opinion);
+                }
+                if (ModelConstants.RANDOM.nextInt(3) < Math.abs(opinion)) {
+                    mediaExposure += Integer.signum(opinion);
+                }
+                if (ModelConstants.RANDOM.nextInt(4) < Math.abs(opinion)) {
+                    mediaExposure += Integer.signum(opinion);
+                }
+                if (opinion == 0) {
+                    mediaExposure = ModelConstants.RANDOM.nextInt(7) - 3;
+                }
             }
         }
-        //todo: binary opinion media exposure
+        else{
+            int proMediaExposure = 2;
+            int counterMediaExposure = 1;
+            if (ModelConstants.OPINION_MODEL == 2) {
+
+
+                if (ModelConstants.RANDOM.nextInt(2) < Math.abs(opinion)) {
+                    proMediaExposure += Integer.signum(opinion);
+                }
+                if (ModelConstants.RANDOM.nextInt(3) < Math.abs(opinion)) {
+                    proMediaExposure += Integer.signum(opinion);
+                }
+                if (ModelConstants.RANDOM.nextInt(4) < Math.abs(opinion)) {
+                    proMediaExposure += Integer.signum(opinion);
+                }
+
+                proMediaExposure *= networkHomogeneity;
+
+                if (ModelConstants.RANDOM.nextInt(2) >= Math.abs(opinion)) {
+                    counterMediaExposure += Integer.signum(opinion);
+                }
+                if (ModelConstants.RANDOM.nextInt(3) >= Math.abs(opinion)) {
+                    counterMediaExposure += Integer.signum(opinion);
+                }
+                if (ModelConstants.RANDOM.nextInt(4) >= Math.abs(opinion)) {
+                    counterMediaExposure += Integer.signum(opinion);
+                }
+
+                counterMediaExposure *= 1 - networkHomogeneity * ModelConstants.NETWORK_HOMOGENEITY_IMPACT;
+
+                mediaExposure = proMediaExposure - counterMediaExposure;
+
+                if (opinion == 0) {
+                    mediaExposure = ModelConstants.RANDOM.nextInt(7) - 3;
+                }
+            }
+        }
     }
 
     public void updateOpinion() {
@@ -88,25 +126,44 @@ public class Voter {
         float tally;
         float oldOpinion;
         if (ModelConstants.OPINION_MODEL == 2) {
-            oldOpinion = opinion * ((1 - ModelConstants.OPINION_DECAY) + ModelConstants.RANDOM.nextFloat() * ModelConstants.OPINION_DECAY);
+            if(ModelConstants.OPINION_UPDATE_MODEL == 1) {
+                oldOpinion = opinion * ((1 - ModelConstants.OPINION_DECAY) + ModelConstants.RANDOM.nextFloat() * ModelConstants.OPINION_DECAY);
 
-            tally = oldOpinion + ModelConstants.SOCIAL_INFLUENCE * socialExposure + ModelConstants.MEDIA_INFLUENCE * mediaExposure;
+                tally = oldOpinion + ModelConstants.SOCIAL_INFLUENCE * (socialExposure - opinion) + ModelConstants.MEDIA_INFLUENCE * (mediaExposure - opinion);
 
-            if ((Math.round(tally)) < opinion) {
-                opinion -= 1;
-            } else if ((Math.round(tally)) > opinion) {
-                opinion += 1;
+
+                if ((Math.round(tally)) < opinion) {
+                    opinion -= 1;
+                } else if ((Math.round(tally)) > opinion) {
+                    opinion += 1;
+                }
+
+                System.out.println(this.node + " old Opinion: " + oldOpinion + ", social Exposure: " + socialExposure + ", media Exposure: " + mediaExposure);
+                System.out.println("Tally: " + tally + ", new opinion: " + opinion);
+
+                while (Math.abs(opinion) > 3) {
+                    opinion = opinion - Integer.signum(opinion);
+                }
+            }
+            else if(ModelConstants.OPINION_UPDATE_MODEL == 2){
+                socialExposure = (socialExposure - opinion) * ModelConstants.SOCIAL_INFLUENCE;
+                float mediaExposureFloat = (mediaExposure - opinion) * ModelConstants.MEDIA_INFLUENCE;
+
+                float opinionInfluence = (socialExposure + mediaExposureFloat)/2 * (ModelConstants.OPINION_DECAY + ModelConstants.OPINION_DECAY * ModelConstants.RANDOM.nextFloat());
+
+                if(Math.round(opinionInfluence) > 0){
+                    opinion++;
+                }
+                else if (Math.round(opinionInfluence) < 0){
+                    opinion--;
+                }
+
+                while (Math.abs(opinion) > 3) {
+                    opinion = opinion - Integer.signum(opinion);
+                }
             }
 
-            if ((Math.round(tally)) < opinion) {
-                opinion -= 1;
-            } else if ((Math.round(tally)) > opinion) {
-                opinion += 1;
-            }
 
-            while (Math.abs(opinion) > 3) {
-                opinion = opinion - Integer.signum(opinion);
-            }
         } else {
             oldOpinion = (opinionBoolean ? 1 : -1) * ((1 - ModelConstants.OPINION_DECAY) + ModelConstants.RANDOM.nextFloat() * ModelConstants.OPINION_DECAY);
 
@@ -141,17 +198,21 @@ public class Voter {
         return result;
     }
 
-    public float opinionSimularity(Voter v) {
+    public float opinionSimilarity(Voter v) {
         return ((6 - Math.abs(v.getAgentOpinion() - this.getAgentOpinion())) / 6);
     }
 
 
     public void selectDiscussants() {
         discussants.clear();
+
+
+
         if (ModelConstants.DISCUSSANTS_MODEL == 1) {
 
                 discussants = getAdjacent();
         }
+
 
         else{
 
@@ -165,11 +226,11 @@ public class Voter {
                 if
             }*/
 
-            for (int i = (int)(ModelConstants.BASE_DISCUSSANTS * 10); i > 0; i--){
+            for (int i = (int)(ModelConstants.BASE_DISCUSSANTS * 10)-1; i >= 0; i--){
                 discussants.add(neighbours.get(i));
                 neighboursToRemove.add(neighbours.get(i));
 
-                if (opinionSimularity(neighbours.get(i)) >= ModelConstants.HOMOPHILY_PROPENSITY) {
+                if (opinionSimilarity(neighbours.get(i)) >= ModelConstants.HOMOPHILY_PROPENSITY) {
                     count++;
                 }
 
@@ -184,7 +245,7 @@ public class Voter {
             int i  = 0;
             while (count / getAdjacent().size() <= ModelConstants.BASE_DISCUSSANTS*10 && neighbours.size() > neighboursToRemove.size()) {
                     for (Voter n : neighbours) {
-                        if (opinionSimularity(n) >= 1 - (i / 6)) {
+                        if (opinionSimilarity(n) >= 1 - (i / 6)) {
                             discussants.add(n);
                             neighboursToRemove.add(n);
                             count++;
@@ -247,6 +308,24 @@ public class Voter {
 
             */
         }
+
+        calculateNetworkHomogeneity();
+
+        if (ModelConstants.SELF_DISCUSS){
+            discussants.add(this);
+        }
+
+
+    }
+
+    private void calculateNetworkHomogeneity(){
+        int count = 0;
+        for (Voter d: discussants){
+            if (d.opinion >= opinion -1 && d.opinion <= opinion+1){
+                count++;
+            }
+        }
+        networkHomogeneity = count/discussants.size();
     }
 
     public void discuss() {
@@ -268,7 +347,7 @@ public class Voter {
             }
             socialExposure = (float) sum / discussants.size();
         }
-        else{
+        else if (ModelConstants.SOCIAL_INFLUENCE_MODEL == 2) {
 
             //majority model
 
@@ -285,7 +364,9 @@ public class Voter {
                         maxValue = discussants.get(i).getAgentOpinion();
                     }
                 }
-            } else {
+            }
+
+            else {
                 for (int i = 0; i < discussants.size(); ++i) {
                     int count = 0;
                     for (int j = 0; j < discussants.size(); ++j) {
@@ -303,9 +384,21 @@ public class Voter {
 
         }
 
+        else {
+            //Bounded confidence model
+
+            int sum = 0, count = 0;
+            for (Voter d: discussants){
+                if (d.opinion >= opinion - 1 && d.opinion <= opinion + 1){
+                    sum += d.opinion;
+                    count++;
+                }
+            }
+            socialExposure = sum/count;
+        }
     }
 
-    public ArrayList<Voter> getDisscussants() {
+    public ArrayList<Voter> getDiscussants() {
         return discussants;
     }
 }

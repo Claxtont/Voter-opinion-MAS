@@ -14,7 +14,7 @@ public class GUIParameterBox extends JPanel {
     private String[] graphs = {"graph 1, grid", "graph 2, torus", "graph 2, Dorogovtsev Mendes graph"};
     private String[] socialInfluenceModels = {"Social Influence Model 1, Mean Average", "Social Influence Model 2, Majority", "Social Influence Model 3, Deffuant-Weisbauch BC model"};
     private String[] discussantSelectionModels = {"Discussant Selection Model 1, all neighbours", "Discussant Selection Model 2, Homophily-based"};
-    private String[] opinionUpdateModels = {"Opinion Update Model 1, Weighted mean average"};
+    private String[] opinionUpdateModels = {"Opinion Update Model 1, Weighted mean average", "Opinion Update Model 2, External Influence Push"};
     private String[] charts = {"Bar Chart: opinion distribution","Line Chart: Variance", "Line Chart: Excess Kurtosis", "Line Chart: ER Index"};
 
     public GUIParameterBox(){
@@ -57,6 +57,7 @@ public class GUIParameterBox extends JPanel {
         ModelConstants.OPINION_MODEL = model.getSelectedIndex() + 1;
         ModelConstants.DISCUSSANTS_MODEL = discussantSelectionModel.getSelectedIndex() + 1;
         ModelConstants.OPINION_UPDATE_MODEL = opinionUpdateModel.getSelectedIndex() + 1;
+        ModelConstants.SOCIAL_INFLUENCE_MODEL = socialInfluenceModel.getSelectedIndex() + 1;
         ModelConstants.OPINION_DECAY = (float) opinionDecay.getValue();
         ModelConstants.MEDIA_INFLUENCE = (float) mediaInfluence.getValue();
         ModelConstants.SOCIAL_INFLUENCE = (float) socialInfluence.getValue();

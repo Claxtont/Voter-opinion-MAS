@@ -10,6 +10,7 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import java.awt.*;
@@ -18,6 +19,8 @@ public class GUIChart {
 
 
     public static DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    public static XYSeriesCollection lineDataset = new XYSeriesCollection();
+    public static int graphNum = 0;
 
     static JFreeChart createChart() {
 
@@ -29,7 +32,7 @@ public class GUIChart {
         switch (ModelConstants.CHART) {
             case (1):
                 chartName = "Voter Opinion distribution";
-                break;
+                return initChart(chartName, dataset);
             case (2):
                 chartName = "Voter Opinion variance";
                 break;
@@ -40,13 +43,11 @@ public class GUIChart {
                 chartName = "Voter Opinion ER index";
                 break;
         }
+        graphNum++;
+        lineDataset.addSeries(new XYSeries("graph " + graphNum));
+        lineDataset.getSeries("graph " + graphNum).add(0, 1);
+        return initChart(chartName, lineDataset);
 
-        if (ModelConstants.CHART == 1) {
-            return initChart(chartName, dataset);
-        }
-        else {
-            return initChart(chartName, dataset);
-        }
     }
 
     static JFreeChart initChart(String chartName, CategoryDataset dataset){
@@ -56,7 +57,6 @@ public class GUIChart {
                         "Milliseconds" /* y-axis label */,
                         dataset);
 
-        chart.addSubtitle(new TextTitle("Default Chart Subtitle"));
         chart.setBackgroundPaint(Color.WHITE);
         CategoryPlot plot = (CategoryPlot) chart.getPlot();
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
@@ -73,8 +73,12 @@ public class GUIChart {
                 null,
                 "Default",
                 dataset);
-        chart.addSubtitle(new TextTitle("Default Chart Subtitle"));
 
+        chart.setBackgroundPaint(Color.WHITE);
+        //CategoryPlot plot = (CategoryPlot) chart.getPlot();
+        //NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        //rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        chart.getLegend().setFrame(BlockBorder.NONE);
         return chart;
     }
 

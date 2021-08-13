@@ -3,7 +3,7 @@
 node  {
     /*text-background-mode: rounded-box;*/
     /*text-alignment: at-right;*/
-	size: 20px, 20px;
+	size: 10px, 10px;
 	shape: rounded-box;
 }
 node.om3  {fill-color: rgb(255,0,0); }
