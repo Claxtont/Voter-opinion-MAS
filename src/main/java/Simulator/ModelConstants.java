@@ -20,17 +20,17 @@ public class ModelConstants {
     public static int DISCUSSANTS_MODEL = 1;
     //1 = all adjacent voters are the voter's discussants, 2 = homophilly based
     public static int OPINION_UPDATE_MODEL = 1;
-    //1 = weighted mean average, 2 = current social only, 3 = social and media TODO: check this fully
+    //1 = weighted mean average, 2 = current social only, 3 = social and media
     public static int CHART = 1;
     //1 = BarChart, 2 = Variance, 3 = EK, 4 = ER Index
 
     public static float HOMOPHILY_PROPENSITY = (float)0.6;
     public static float BASE_DISCUSSANTS = (float)0.2;
-    public static float OPINION_DECAY = (float)0.7;
+    public static float OPINION_DECAY = (float)0.4;
     public static float MEDIA_INFLUENCE = (float)0.7;
-    public static float SOCIAL_INFLUENCE = 1;
+    public static float SOCIAL_INFLUENCE = (float)0.7;
     public static boolean SELF_DISCUSS = true;
-    public static float NETWORK_HOMOGENEITY_IMPACT = 0;
+    public static float NETWORK_HOMOGENEITY_IMPACT = 1;
 
     public static Random RANDOM = new Random();
 }

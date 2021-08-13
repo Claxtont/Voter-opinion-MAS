@@ -54,7 +54,7 @@ public class GUIChart {
         JFreeChart chart = ChartFactory.createBarChart(
                         chartName,
                         null /* x-axis label*/,
-                        "Milliseconds" /* y-axis label */,
+                        null /* y-axis label */,
                         dataset);
 
         chart.setBackgroundPaint(Color.WHITE);
@@ -71,7 +71,7 @@ public class GUIChart {
         JFreeChart chart = ChartFactory.createXYLineChart(
                 chartName,
                 null,
-                "Default",
+                null,
                 dataset);
 
         chart.setBackgroundPaint(Color.WHITE);

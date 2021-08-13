@@ -8,13 +8,13 @@ public class Voter {
 
     private int opinion;
     private Boolean opinionBoolean;
-    private int mediaExposure;
+    private float mediaExposure;
     private int networkOpinionDistribution;
     private float networkHomogeneity;
     private double politicalInterest;
     private ArrayList<Voter> discussants = new ArrayList<>();
     private float socialExposure;
-    private int networkDisagreement;
+    private float networkAgreement;
     private Node node;
 
     public Voter(Node n) {
@@ -46,6 +46,7 @@ public class Voter {
         }
 
         networkHomogeneity = (float)0.5;
+        networkAgreement = 0;
     }
 
     public Node getNode() {
@@ -83,39 +84,39 @@ public class Voter {
             }
         }
         else{
-            int proMediaExposure = 2;
-            int counterMediaExposure = 1;
+            float proMediaExposure = 1;
+            float counterMediaExposure = 0;
             if (ModelConstants.OPINION_MODEL == 2) {
 
 
                 if (ModelConstants.RANDOM.nextInt(2) < Math.abs(opinion)) {
-                    proMediaExposure += Integer.signum(opinion);
+                    proMediaExposure ++;
                 }
                 if (ModelConstants.RANDOM.nextInt(3) < Math.abs(opinion)) {
-                    proMediaExposure += Integer.signum(opinion);
+                    proMediaExposure ++;
                 }
                 if (ModelConstants.RANDOM.nextInt(4) < Math.abs(opinion)) {
-                    proMediaExposure += Integer.signum(opinion);
+                    proMediaExposure ++;
                 }
 
-                proMediaExposure *= networkHomogeneity;
+                proMediaExposure *= 2/(1+ Math.exp(-networkAgreement));
 
                 if (ModelConstants.RANDOM.nextInt(2) >= Math.abs(opinion)) {
-                    counterMediaExposure += Integer.signum(opinion);
+                    counterMediaExposure ++;
                 }
                 if (ModelConstants.RANDOM.nextInt(3) >= Math.abs(opinion)) {
-                    counterMediaExposure += Integer.signum(opinion);
+                    counterMediaExposure ++;
                 }
-                if (ModelConstants.RANDOM.nextInt(4) >= Math.abs(opinion)) {
-                    counterMediaExposure += Integer.signum(opinion);
-                }
+//                if (ModelConstants.RANDOM.nextInt(4) >= Math.abs(opinion)) {
+//                    counterMediaExposure ++;
+//                }
 
-                counterMediaExposure *= 1 - networkHomogeneity * ModelConstants.NETWORK_HOMOGENEITY_IMPACT;
+                counterMediaExposure *= (1+ Math.exp(-networkAgreement))/2;
 
-                mediaExposure = proMediaExposure - counterMediaExposure;
+                mediaExposure = (proMediaExposure - counterMediaExposure) * Math.signum(opinion);
 
                 if (opinion == 0) {
-                    mediaExposure = ModelConstants.RANDOM.nextInt(7) - 3;
+                    mediaExposure = ModelConstants.RANDOM.nextInt(3) - 1;
                 }
             }
         }
@@ -127,9 +128,18 @@ public class Voter {
         float oldOpinion;
         if (ModelConstants.OPINION_MODEL == 2) {
             if(ModelConstants.OPINION_UPDATE_MODEL == 1) {
-                oldOpinion = opinion * ((1 - ModelConstants.OPINION_DECAY) + ModelConstants.RANDOM.nextFloat() * ModelConstants.OPINION_DECAY);
 
-                tally = oldOpinion + ModelConstants.SOCIAL_INFLUENCE * (socialExposure - opinion) + ModelConstants.MEDIA_INFLUENCE * (mediaExposure - opinion);
+                System.out.println(opinion);
+
+                if(ModelConstants.NETWORK_HOMOGENEITY_IMPACT != 0){
+                    oldOpinion = (float) ((float)opinion * ( (1 - ModelConstants.OPINION_DECAY * ((1 + Math.exp(-networkAgreement))/2)) + ModelConstants.RANDOM.nextFloat() * ModelConstants.OPINION_DECAY * ((1 + Math.exp(-networkAgreement))/2)));
+                }
+                else {
+                    oldOpinion = (float)opinion * ((1 - ModelConstants.OPINION_DECAY) + ModelConstants.RANDOM.nextFloat() * ModelConstants.OPINION_DECAY);
+                }
+
+                tally = oldOpinion + ModelConstants.SOCIAL_INFLUENCE * (socialExposure - (float)opinion) + ModelConstants.MEDIA_INFLUENCE * (mediaExposure - (float)opinion);
+
 
 
                 if ((Math.round(tally)) < opinion) {
@@ -138,7 +148,7 @@ public class Voter {
                     opinion += 1;
                 }
 
-                System.out.println(this.node + " old Opinion: " + oldOpinion + ", social Exposure: " + socialExposure + ", media Exposure: " + mediaExposure);
+                System.out.println(this.node + "Network Agreement" + networkAgreement + " old Opinion: " + oldOpinion + ", social Exposure: " + socialExposure + ", media Exposure: " + mediaExposure);
                 System.out.println("Tally: " + tally + ", new opinion: " + opinion);
 
                 while (Math.abs(opinion) > 3) {
@@ -149,7 +159,11 @@ public class Voter {
                 socialExposure = (socialExposure - opinion) * ModelConstants.SOCIAL_INFLUENCE;
                 float mediaExposureFloat = (mediaExposure - opinion) * ModelConstants.MEDIA_INFLUENCE;
 
-                float opinionInfluence = (socialExposure + mediaExposureFloat)/2 * (ModelConstants.OPINION_DECAY + ModelConstants.OPINION_DECAY * ModelConstants.RANDOM.nextFloat());
+                float opinionInfluence = (socialExposure + mediaExposureFloat)/2; // * (ModelConstants.OPINION_DECAY + ModelConstants.OPINION_DECAY * ModelConstants.RANDOM.nextFloat());
+
+                if(ModelConstants.NETWORK_HOMOGENEITY_IMPACT != 0){
+                    opinionInfluence *=  2/(1 + Math.exp(-networkAgreement));
+                }
 
                 if(Math.round(opinionInfluence) > 0){
                     opinion++;
@@ -246,9 +260,11 @@ public class Voter {
             while (count / getAdjacent().size() <= ModelConstants.BASE_DISCUSSANTS*10 && neighbours.size() > neighboursToRemove.size()) {
                     for (Voter n : neighbours) {
                         if (opinionSimilarity(n) >= 1 - (i / 6)) {
-                            discussants.add(n);
-                            neighboursToRemove.add(n);
-                            count++;
+                            if(!neighboursToRemove.contains(n)) {
+                                discussants.add(n);
+                                neighboursToRemove.add(n);
+                                count++;
+                            }
                         }
                 }
                 i++;
@@ -325,7 +341,10 @@ public class Voter {
                 count++;
             }
         }
-        networkHomogeneity = count/discussants.size();
+
+        networkHomogeneity = (float)count/discussants.size();
+
+        networkAgreement = (float)count/discussants.size() - (float)(discussants.size() - count)/discussants.size();
     }
 
     public void discuss() {
@@ -335,14 +354,8 @@ public class Voter {
             for (Voter voter : discussants) {
                 if (ModelConstants.OPINION_MODEL == 2) {
                     sum += voter.opinion;
-                    if (voter.opinion * this.opinion < 0 || (this.opinion == 0 && voter.opinion != 0)) {
-                        networkDisagreement++;
-                    }
                 } else {
                     sum += voter.opinionBoolean ? 1 : -1;
-                    if (voter.opinionBoolean != this.opinionBoolean) {
-                        networkDisagreement++;
-                    }
                 }
             }
             socialExposure = (float) sum / discussants.size();

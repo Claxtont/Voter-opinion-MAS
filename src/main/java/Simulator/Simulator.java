@@ -49,23 +49,53 @@ public class Simulator {
         }
         else if (ModelConstants.CHART == 2){
             //get variance at this time step. ammend it to the chart
-            double mean,sum = 0, variance;
-            for (Voter v: voters){
-                sum += v.getAgentOpinion();
-            }
-            mean = sum/voters.size();
-            sum = 0;
-
-            for (Voter v: voters){
-                sum += Math.pow((v.getAgentOpinion()-mean), 2);
-            }
-
-            variance = sum/(voters.size()-1);
-            System.out.println("variance = " + variance);
-
+            double variance = variance(voters);
 
             GUIChart.lineDataset.getSeries("graph " + GUIChart.graphNum).add(step, variance);
         }
+
+        else if (ModelConstants.CHART == 3){
+            double kurtosis = 0;
+
+            for (Voter v: voters){
+                kurtosis += Math.pow((variance(voters) - mean(voters)), 4);
+            }
+
+            double sd = standardDeviation(variance(voters));
+
+            kurtosis = (kurtosis / ((voters.size() - 1) * Math.pow(sd, 4))) - 3;
+
+            if (step == 0){
+                kurtosis = 0.5;
+            }
+
+            GUIChart.lineDataset.getSeries("graph " + GUIChart.graphNum).add(step, kurtosis);
+        }
+    }
+
+    private double mean(ArrayList<Voter> voters){
+        double sum = 0;
+        for (Voter v: voters){
+            sum += v.getAgentOpinion();
+        }
+        return sum/voters.size();
+    }
+
+    private double variance(ArrayList<Voter> voters){
+
+        double mean = mean(voters);
+
+        double sum = 0;
+
+        for (Voter v: voters){
+            sum += Math.pow((v.getAgentOpinion()-mean), 2);
+        }
+
+        return sum/(voters.size()-1);
+    }
+
+    private double standardDeviation(double variance){
+        return Math.sqrt(variance);
     }
 
     private void reset() {
