@@ -107,9 +107,6 @@ public class Voter {
                 if (ModelConstants.RANDOM.nextInt(3) >= Math.abs(opinion)) {
                     counterMediaExposure ++;
                 }
-//                if (ModelConstants.RANDOM.nextInt(4) >= Math.abs(opinion)) {
-//                    counterMediaExposure ++;
-//                }
 
                 counterMediaExposure *= (1+ Math.exp(-networkAgreement))/2;
 
@@ -159,7 +156,7 @@ public class Voter {
                 socialExposure = (socialExposure - opinion) * ModelConstants.SOCIAL_INFLUENCE;
                 float mediaExposureFloat = (mediaExposure - opinion) * ModelConstants.MEDIA_INFLUENCE;
 
-                float opinionInfluence = (socialExposure + mediaExposureFloat)/2; // * (ModelConstants.OPINION_DECAY + ModelConstants.OPINION_DECAY * ModelConstants.RANDOM.nextFloat());
+                float opinionInfluence = (socialExposure + mediaExposureFloat)/2;
 
                 if(ModelConstants.NETWORK_HOMOGENEITY_IMPACT != 0){
                     opinionInfluence *=  2/(1 + Math.exp(-networkAgreement));

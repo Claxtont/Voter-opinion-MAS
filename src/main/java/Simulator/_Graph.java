@@ -18,9 +18,6 @@ public class _Graph {
     public _Graph() throws IOException {
 
         graph = new DefaultGraph("_Graph");
-        //viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-
-        //View view = viewer.addDefaultView(false);
 
         String styleSheet = Files.readString(java.nio.file.Path.of("stylesheet.css"));
 
@@ -65,7 +62,7 @@ public class _Graph {
 
         for(int i=0; i<size-1; i++){
             gen.nextEvents();
-            //sleep(5);
+
         }
 
         gen.end();
@@ -75,11 +72,11 @@ public class _Graph {
     public void populate(){
         for(Node n: graph){
             n.setAttribute("Voter",new Voter(n));
-            //n.setAttribute("ui.label", n.toString());
+
             System.out.println(n.toString());
             Voter v = (Voter)n.getAttribute("Voter");
             colour(v);
-            //sleep(10);
+
         }
     }
 
@@ -129,7 +126,7 @@ public class _Graph {
         for (int i = 0; i < graph.getEdgeCount(); i++){
             graph.getEdge(i).setAttribute("ui.class", "blank");
         }
-        //Voter v = voters.get(0);
+
         for (Voter v : voters) {
             for (Voter d : v.getDiscussants()){
                 if (d != v){

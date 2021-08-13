@@ -25,10 +25,7 @@ public class GUIChart {
     static JFreeChart createChart() {
 
         String chartName = null;
-        //var dataset = new XYSeriesCollection();
 
-        //if (dataset == null){dataset = createDefaultDataset();}
-        //if (chartName == null){chartName = "default chart name";}
         switch (ModelConstants.CHART) {
             case (1):
                 chartName = "Voter Opinion distribution";
@@ -75,9 +72,6 @@ public class GUIChart {
                 dataset);
 
         chart.setBackgroundPaint(Color.WHITE);
-        //CategoryPlot plot = (CategoryPlot) chart.getPlot();
-        //NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-        //rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
         chart.getLegend().setFrame(BlockBorder.NONE);
         return chart;
     }

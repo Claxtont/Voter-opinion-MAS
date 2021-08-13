@@ -100,7 +100,6 @@ public class Simulator {
 
     private void reset() {
         step = 0;
-        //view.showStatus(step, field);
     }
 
     public void simulateOneStep() {

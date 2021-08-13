@@ -30,7 +30,7 @@ public class GUIGraph extends JPanel {
         DefaultGraph graph = new DefaultGraph("g1");
         gen(graph);
         setGraph(graph);
-        //setGraph(graph2);
+
     }
 
      public void setGraph(DefaultGraph graph)
